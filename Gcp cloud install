@@ -1,0 +1,49 @@
+ sudo gcloud init
+ 1261  sudo apt update
+ 1262  sudo apt install apt-transport-https ca-certificates gnupg
+ 1263  sudo rm /usr/share/keyrings/cloud.google.gpg
+ 1264  sudo rm /usr/share/keyrings/cloud.google.gpg~
+ 1265  sudo rm /etc/apt/sources.list.d/google-cloud-sdk.list
+ 1266  sudo rm /usr/share/keyrings/cloud.google.gpg && sudo rm /usr/share/keyrings/cloud.google.gpg~ && sudo rm /etc/apt/sources.list.d/google-cloud-sdk.list
+ 1267  sudo apt-get install apt-transport-https ca-certificates gnupg && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && sudo apt-get update && sudo apt-get install google-cloud-sdk && sudo apt-get install google-cloud-sdk-app-engine-java && sudo apt-get install google-cloud-sdk-app-engine-python && gcloud init
+ 1268  gcloud components install gke-gcloud-auth-plugin
+ 1269  sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+ 1270  clear
+ 1271  gke-gcloud-auth-plugin --version
+ 1272  gcloud container clusters get-credentials gke_inbox-staging_asia-south1-b_inbox-staging-cluster
+ 1273  gcloud components install kubectl
+ 1274  sudo apt-get install kubectl
+ 1275  gcloud container clusters get-credentials gke_inbox-staging_asia-south1-b_inbox-staging-cluster
+ 1276  gcloud container clusters get-credentials inbox-staging-cluster
+ 1277  gcloud container clusters get-credentials inbox-staging-cluster --zone=asia-south1-b
+ 1278  kubectl get namespacees
+ 1279  kubectl get ns
+ 1280  kubectl get pods -staging
+ 1281  kubectl get pods -nstaging
+ 1282  sudo port install k9s
+ 1283  sudo apt update
+ 1284  sudo apt install snapd
+ 1285  sudo snap install k9s
+ 1286  k9s
+ 1287  kubectl get po
+ 1288  export KUBECONFIG=$HOME/.kube/config
+ 1289  k9s
+ 1290  sudo k9s
+ 1291  k9s
+ 1292  k9s -cluster=inbox-staging
+ 1293  export KUBECONFIG=$HOME/.kube/config
+ 1294  k9s info
+ 1295  vi  /home/subbu/.k9s/config.yml
+ 1296  sudo
+ 1297  clear
+ 1298  k9s get pods
+ 1299  clear
+ 1300  k9s
+ 1301  clear
+ 1302  which k9s
+ 1303  k9s
+ 1304  clear
+ 1305  k9s
+ 1306  clear
+ 1307  which k9s
+ 1308  history
