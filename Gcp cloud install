@@ -135,10 +135,10 @@ $ which kubectl
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 THEN CONFIGURE AWS  
 $ aws configure
-AWS Access Key ID [None]: AKIAZZMWLTUNO26EUEIT
-AWS Secret Access Key [None]:  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
+AWS Access Key ID [None]: AKIAZZMWLTUNO2
+AWS Secret Access Key [None]:  ly8nLp/rkn29H0IiuulIVlORg
 Default region name [None]: ap-south-1
-Default output format [None]: yaml or json
+Default output format [None]: yaml or {json}
 
 $ aws s3 ls                   >> it show aws s3 buckerts
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.>>>>>>>>>>>>>>>>>>>
