@@ -47,3 +47,117 @@
  1306  clear
  1307  which k9s
  1308  history
+ 
+ 
+ 
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ 
+ INSTALL EKS STEPS 
+ 
+ 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                                                      EKS CREATION >>>>>>>>>>>>>IN AWS ..!
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                       !!!! IN THIS ALL SETUP ONLY AWS CLOUD EKS...!!!!
+(1) first eks ni setup chayali ?
+GO TO AWS
+create eks cluster >>>click   CLUSTER CREATE
+There are 6 steps .
+Step 1:
+$Configure cluster .                   >> name , kubernates version ,, create IAM  select role and create.
+                                                    chose > eks ,
+                                                                  eks cluster
+                                                       all next click
+  
+Step 2
+Specify networking.                   >>   create vpc and subnet , securtyGroup    <create are not your choise >                 >> and   Next all click
+
+Step 3
+Configure logging.                     >> next all  click
+
+Step 4
+Select add-ons.                         >> next all click 
+Step 5
+Configure selected add-ons settings.      >> next all click
+
+Step 6
+Review and create.                    >> next all 
+
+>>>>>>>> How to create node in EKS  >>>>>>>>> 
+Go to Cluster  ....
+Click .
+and click   >>[  Compute   ]
+ Add Node Group     >> click
+
+    Step 1,
+    Configure node group    >>          Name , Node IAM role, 
+    policy name >>   {{ * AmazonEKSWorkerNodePolicy	* AmazonEC2ContainerRegistryReadOnly   * AmazonEKS_CNI_Policy    }}   ( 3 policys must and shoud )
+   
+    Step 2
+    Set compute and scaling configuration >>  all next click
+
+    Step 3
+    Specify networking  >>  all nect click
+
+    Step 4
+    Review and create  >>      NEXT   >> CREATE 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&7
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    AND SETUP.... LOCAL   ,, HOW TO SETUP EKS    .. SEE   ALL   STEPS...? 
+
+    Then  local setup >> tack ec2 instance connect ssh 
+    Then , eks setup
+.......................EKS::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::>>
+
+$ sudo apt -update
+Installing or updating the latest version of the AWS CLI ::: neku life lo dought vastai check it online!
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..   
+ ( IN THIS INSTALLING AWS CLI )
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+$ unzip awscliv2.zip
+$ sudo ./aws/install
+$ sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+$ which aws
+/usr/local/bin/aws >>outupt
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+THEN ::: INSTALL KUBECTL   Installing or updating kubectl::
+
+$ curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
+$ curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
+$ openssl sha1 -sha256 kubectl
+SHA256(kubectl)= d577810dec7ceffec97479870a45ae257cb149221cf005ee3609dfbd6812c2ae   >>output
+$chmod +x ./kubectl
+$ mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+$ echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+$ kubectl version --short --client
+$ which kubectl
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+THEN CONFIGURE AWS  
+$ aws configure
+AWS Access Key ID [None]: AKIAZZMWLTUNO26EUEIT
+AWS Secret Access Key [None]:  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
+Default region name [None]: ap-south-1
+Default output format [None]: yaml or json
+
+$ aws s3 ls                   >> it show aws s3 buckerts
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.>>>>>>>>>>>>>>>>>>>
+AND CONNECT AWS EKS    .. HOW TO CONNECT EKS .......SEE ALL STEP FALLOW
+Creating an Amazon EKS cluster ::::
+
+$ aws eks --region ap-south-1 describe-cluster --name grafan-prometheus --query cluster.status
+( aws eks --region ap-south-1 describe-cluster --name  <grafan-prometheus > --query cluster.status
+   **out-put "ACTIVE"  **                                              \ " in this cluster name "\  )
+
+$ aws eks --region  ap-south-1 update-kubeconfig --name  >grafan-prometheus<                                                                        || >> In this name clustername 
+  aws eks --region ap-south-1 update-kubeconfig --name  > CLUSTERNAME <  
+                              
+$ kubectl get nodes
+$ kubectl get svc
+$ kubectl get pods
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  END ...!
+ 
+ 
+ 
+ 
+ 
