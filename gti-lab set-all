@@ -1,0 +1,45 @@
+https://docs.gitlab.com/runner/install/linux-manually.html
+
+
+Install GitLab Runner manually on GNU/Linux 
+
+
+* Go Binaries 
+     select linux
+
+
+
+sudo apt update
+curl -LJO "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_${arch}.deb"
+sudo curl -L --output /usr/bin/gitlab-runner "https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64"
+sudo chmod +x /usr/bin/gitlab-runner
+sudo useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash
+sudo gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+ sudo gitlab-runner start
+sudo gitlab-runner register
+                                                
+Enter the GitLab instance URL (for example, https://gitlab.com/):
+https://gitlab.com
+
+Enter the registration token:
+GR1348941sGHRQdcUjYytU6-m4DQr             # we tack at gitlab ci
+Enter a description for the runner:
+[ip-172-31-10-150]: Test Runner
+Enter tags for the runner (comma-separated):
+CI,Devops
+Enter optional maintenance note for the runner:
+CI,Devops
+WARNING: Support for registration tokens and runner parameters in the 'register' command has been deprecated in GitLab Runner 15.6 and will be replaced with support for authentication tokens. For more information, see https://gitlab.com/gitlab-org/gitlab/-/issues/380872 
+Registering runner... succeeded                     runner=GR1348941sGHRQdcU
+Enter an executor: kubernetes, docker-ssh, parallels, instance, ssh, virtualbox, docker+machine, docker-ssh+machine, custom, docker, shell:
+shell
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+ 
+Configuration (with the authentication token) was saved in "/etc/gitlab-runner/config.toml" 
+
+Go to  gitlab  Check it an CI 
+
+
+
+
+
