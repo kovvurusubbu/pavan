@@ -1,0 +1,38 @@
+To check the resource limits and requests of a particular pod in JSON format, you can use the following command:
+
+Copy code
+$ kubectl get pod <pod_name> -o json | jq '.spec.containers[].resources'
+This will display the resource limits and requests of all the containers in the pod. If you want to see the resource limits and requests of a specific container in the pod, you can specify the container name like this:
+
+Copy code
+$ kubectl get pod <pod_name> -o json | jq '.spec.containers[] | select(.name=="<container_name>").resources'
+This will display the resource limits and requests of the specified container.
+ To get the name of a container in a Kubernetes cluster, you can use the kubectl command line tool.
+
+Here is an example of how you can get the names of all the containers in a pod:
+
+Copy code
+$ kubectl get pods -o jsonpath='{.items[].spec.containers[].name}'
+You can also use the describe command to get detailed information about a specific pod, including the names of its containers:
+
+Copy code
+$ kubectl describe pod <pod-name>
+Replace <pod-name> with the name of the pod you want to get the container names for.
+
+Alternatively, you can use the kubectl exec command to execute a command inside a specific container in a pod. For example:
+
+Copy code
+$ kubectl exec <pod-name> -c <container-name> -- <command>
+Replace <pod-name> with the name of the pod, <container-name> with the name of the container, and <command> with the command you want to execute inside the container.
+
+
+
+Commands{*}
+
+$ kubectl get pod <podName>  -o json | jq '.spec.containers[].resources'                 >>{{ in this command it showing resoureces only json formate }}
+
+$ kubectl get po valuelists-api-c4b6f55-vr7s6  -o json | jq '.spec.containers[].name'     >> it showing name container
+
+$ 
+
+
