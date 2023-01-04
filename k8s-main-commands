@@ -1,27 +1,29 @@
-To check the resource limits and requests of a particular pod in JSON format, you can use the following command:
 
-Copy code
+
+$ kubectl get configmap <pod name..premium> -o yaml -nstaging | kubectl neat > ar-premium-calculator-conf.yaml
+
+$ kubectl get configmap <premi> -o yaml -nstaging | kubectl neat  > premium-calculator-env.yaml
+
+$ kubectl get svc premium-calculator -o yaml -n staging | kubectl neat > premium-calculator-svc-neat.yaml
+
+  To check the resource limits and requests of a particular pod in JSON format, you can use the following command:
+
 $ kubectl get pod <pod_name> -o json | jq '.spec.containers[].resources'
-This will display the resource limits and requests of all the containers in the pod. If you want to see the resource limits and requests of a specific container in the pod, you can specify the container name like this:
 
-Copy code
 $ kubectl get pod <pod_name> -o json | jq '.spec.containers[] | select(.name=="<container_name>").resources'
-This will display the resource limits and requests of the specified container.
- To get the name of a container in a Kubernetes cluster, you can use the kubectl command line tool.
+  This will display the resource limits and requests of the specified container.
+ 
 
 Here is an example of how you can get the names of all the containers in a pod:
 
-Copy code
 $ kubectl get pods -o jsonpath='{.items[].spec.containers[].name}'
 You can also use the describe command to get detailed information about a specific pod, including the names of its containers:
 
-Copy code
 $ kubectl describe pod <pod-name>
 Replace <pod-name> with the name of the pod you want to get the container names for.
 
 Alternatively, you can use the kubectl exec command to execute a command inside a specific container in a pod. For example:
 
-Copy code
 $ kubectl exec <pod-name> -c <container-name> -- <command>
 Replace <pod-name> with the name of the pod, <container-name> with the name of the container, and <command> with the command you want to execute inside the container.
 
@@ -33,6 +35,35 @@ $ kubectl get pod <podName>  -o json | jq '.spec.containers[].resources'        
 
 $ kubectl get po valuelists-api-c4b6f55-vr7s6  -o json | jq '.spec.containers[].name'     >> it showing name container
 
-$ 
+$  kubectl get pod api-gateway-54545 -o json | jq '.spec.containers[] | select(.name=="api-gateway").resource
 
+$ kubectl get pod -n staging  -o wide --sort-by=.spec.nodeName      >>its showing nodes with pods
+
+$ kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + " \n Req. RAM: " + .spec.containers[].resources.requests.memory + " \n Lim. RAM: " + .spec.containers[].resources.limits.memory + " \n Req. CPU: " + .spec.containers[].resources.requests.cpu + " \n Lim. CPU: " + .spec.containers[].resources.limits.cpu + " \n Req. Eph. DISK: " + .spec.containers[].resources.requests["ephemeral-storage"] + " \n Lim. Eph. DISK: " + .spec.containers[].resources.limits["ephemeral-storage"] + "\n"'
+   ::in this command   ..Find all resources requests and limits per pod..
+   
+$  kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + " \n Container name: " + .spec.containers[].name + " \n Req. RAM: " + .spec.containers[].resources.requests.memory + " \n Lim. RAM: " + .spec.containers[].resources.limits.memory + " \n Req. CPU: " + .spec.containers[].resources.requests.cpu + " \n Lim. CPU: " + .spec.containers[].resources.limits.cpu + " \n Req. Eph. DISK: " + .spec.containers[].resources.requests["ephemeral-storage"] + " \n Lim. Eph. DISK: " + .spec.containers[].resources.limits["ephemeral-storage"] + "\n"' 
+   ::This recursively will duplicate containers and pods, you can check it, just add container name.
+   
+$ kubectl get po -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image'    >> in this command it showing pods images..
+
+$ kubectl get no -o json | jq -r '.items | sort_by(.status.capacity.memory)[]|[.metadata.name,.status.capacity.memory]'     >> in this command it showing internal ip's 
+
+$ kubectl get po -A -o json | jq -r '.items | sort_by(.spec.nodeName)[] | [.spec.nodeName,.metadata.name] | @csv' | awk -F, '{arr[$1]++}END{for (a in arr) print a, arr[a]}' | sort -nk2
+  ::In this command  it showing nodes in side pods how manY pods are  running inside in node.?
+  
+$ kubectl get nodes -o=custom-columns=NAME:.metadata.name,CAPACITY:.status.capacity.pods
+  :: in this command node Capacity showing 
+  
+$ kubectl logs --since=6h admin-portal-58b89549bf-8kf8l | grep ERROR   >> it showing 5 hours logs in this command
+
+$ kubectl logs --tail=50 <pod_name>                |>>Get the most recent 50 lines of logs for a pod
+
+$ kubectl logs -c <container_name> <pod_name>      |>>Print the logs for a container in a pod
+
+$ kubectl logs <pod_name> --all-containers         |>>View the logs for all containers in a pod
+
+$ kubectl logs --previous <pod_name>               |>> it showing previous loggs
+
+$ 
 
