@@ -67,6 +67,8 @@ $ kubectl logs <pod_name> --all-containers         |>>View the logs for all cont
 
 $ kubectl logs --previous <pod_name>               |>> it showing previous loggs
 
+$ kubectl get ep -n staging                        |>> it showing end points all pods  ip also ..name & endpoint::ips & pod age ? 
+
 
 ..................................................................
 HOW TO SEE POD CPU AND MEMORY UTILTYS    how to see pod memory cpu 
