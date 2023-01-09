@@ -45,9 +45,11 @@ $ kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + "
 $  kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + " \n Container name: " + .spec.containers[].name + " \n Req. RAM: " + .spec.containers[].resources.requests.memory + " \n Lim. RAM: " + .spec.containers[].resources.limits.memory + " \n Req. CPU: " + .spec.containers[].resources.requests.cpu + " \n Lim. CPU: " + .spec.containers[].resources.limits.cpu + " \n Req. Eph. DISK: " + .spec.containers[].resources.requests["ephemeral-storage"] + " \n Lim. Eph. DISK: " + .spec.containers[].resources.limits["ephemeral-storage"] + "\n"' 
    ::This recursively will duplicate containers and pods, you can check it, just add container name.
    
-$ kubectl get po -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image'    >> in this command it showing pods images..
+$ kubectl get po -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image'    >> in this command it showing pods images.ip.
+$ kubectl get po -n staging -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image' | grep brok   || in this command shoing image ip 
 
-$ kubectl get no -o json | jq -r '.items | sort_by(.status.capacity.memory)[]|[.metadata.name,.status.capacity.memory]'     >> in this command it showing internal ip's 
+$ kubectl get no -o json | jq -r '.items | sort_by(.status.capacity.memory)[]|[.metadata.name,.status.capacity.memory]'     >> in this command it showing nodes internal ip's
+
 
   $ kubectl get po -A -o json | jq -r '.items | sort_by(.spec.nodeName)[] | [.spec.nodeName,.metadata.name] | @csv' | awk -F, '{arr[$1]++}END{for (a in arr) print a, arr[a]}' | sort -nk2
   ::In this command  it showing nodes in side pods how manY pods are  running inside in node.?
@@ -69,8 +71,10 @@ $ kubectl logs --previous <pod_name>               |>> it showing previous loggs
 ..................................................................
 HOW TO SEE POD CPU AND MEMORY UTILTYS    how to see pod memory cpu 
 ....................................................................
+website :: https://www.middlewareinventory.com/blog/cpu-memory-usage-nodes-k8s/
+
 vim file-krew.sh 
-install krew :
+install krew  
 
  kubectl krew version
  kubectl krew install resource-capacity
@@ -81,4 +85,6 @@ install krew :
  kubectl resource-capacity --sort cpu.util --util --pods
  kubectl resource-capacity --sort cpu.util --util --pods -n staging 
  kubectl resource-capacity --sort cpu.util --util --pods --containers
+ $ :kubectl resource-capacity --sort cpu.util --util --pods -n staging   # in this command showing all pod cpu memory utilty {main command} it using most time's
+ 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
