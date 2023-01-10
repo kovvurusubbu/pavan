@@ -87,6 +87,16 @@ install krew
  kubectl resource-capacity --sort cpu.util --util --pods
  kubectl resource-capacity --sort cpu.util --util --pods -n staging 
  kubectl resource-capacity --sort cpu.util --util --pods --containers
- $ :kubectl resource-capacity --sort cpu.util --util --pods -n staging   # in this command showing all pod cpu memory utilty {main command} it using most time's
+ $:kubectl resource-capacity --sort cpu.util --util --pods -n staging   # in this command showing all pod cpu memory utilty {main command} it using most time's
  
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+  Deployment commands
+...................................................................................
+kubectl get deployemts   || it showing deployents 
+kubectl get deployment -n "namespace"   | showing deplotments
+kubectl get all -n staging | it showing in namespace inside all running show it
+kubectl set image deployment "deployment_name" nginx=nginx:latest    || in this command set the image new version
+kubectl scale deployment "D_name" --replicas=1 or                    || 1 etc depends
+kubectl rollout histroy deployment "D_NAME"                          || it showing history in deployments
+kubectl rollout history deployment "D_Name" --revision=1             ||  it showing how many time rollouts and showing paticular give 1,2,3
+kubectl rollout undo deployment "D_Name" --revision=2                ||  in this command i tack to back 2  in this commad using  
