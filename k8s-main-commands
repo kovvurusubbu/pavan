@@ -31,13 +31,13 @@ Replace <pod-name> with the name of the pod, <container-name> with the name of t
 
 Commands{*}
 
-$ kubectl get pod <podName>  -o json | jq '.spec.containers[].resources'                 >>{{ in this command it showing resoureces only json formate }}
+$ kubectl get pod <podName>  -o json | jq '.spec.containers[].resources'                ||>>{{ in this command it showing resoureces only json formate }}
 
-$ kubectl get po valuelists-api-c4b6f55-vr7s6  -o json | jq '.spec.containers[].name'     >> it showing name container
+$ kubectl get po valuelists-api-c4b6f55-vr7s6  -o json | jq '.spec.containers[].name'   ||>> it showing name container
 
-$  kubectl get pod api-gateway-54545 -o json | jq '.spec.containers[] | select(.name=="api-gateway").resource
+$  kubectl get pod api-gateway-54545 -o json | jq '.spec.containers[] | select(.name=="api-gateway").resource  ||
 
-$ kubectl get pod -n staging  -o wide --sort-by=.spec.nodeName      >>its showing nodes with pods
+$ kubectl get pod -n staging  -o wide --sort-by=.spec.nodeName      ||>>its showing nodes with pods
 
 $ kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + " \n Req. RAM: " + .spec.containers[].resources.requests.memory + " \n Lim. RAM: " + .spec.containers[].resources.limits.memory + " \n Req. CPU: " + .spec.containers[].resources.requests.cpu + " \n Lim. CPU: " + .spec.containers[].resources.limits.cpu + " \n Req. Eph. DISK: " + .spec.containers[].resources.requests["ephemeral-storage"] + " \n Lim. Eph. DISK: " + .spec.containers[].resources.limits["ephemeral-storage"] + "\n"'
    ::in this command   ..Find all resources requests and limits per pod..
@@ -45,7 +45,7 @@ $ kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + "
 $  kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + " \n Container name: " + .spec.containers[].name + " \n Req. RAM: " + .spec.containers[].resources.requests.memory + " \n Lim. RAM: " + .spec.containers[].resources.limits.memory + " \n Req. CPU: " + .spec.containers[].resources.requests.cpu + " \n Lim. CPU: " + .spec.containers[].resources.limits.cpu + " \n Req. Eph. DISK: " + .spec.containers[].resources.requests["ephemeral-storage"] + " \n Lim. Eph. DISK: " + .spec.containers[].resources.limits["ephemeral-storage"] + "\n"' 
    ::This recursively will duplicate containers and pods, you can check it, just add container name.
    
-$ kubectl get po -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image'    >> in this command it showing pods images.ip.
+$ kubectl get po -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image'   ||>> in this command it showing pods images.ip.
 $ kubectl get po -n staging -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image' | grep brok   || in this command shoing image ip 
 
 $ kubectl get no -o json | jq -r '.items | sort_by(.status.capacity.memory)[]|[.metadata.name,.status.capacity.memory]'     >> in this command it showing nodes internal ip's
@@ -57,19 +57,22 @@ $ kubectl get no -o json | jq -r '.items | sort_by(.status.capacity.memory)[]|[.
 $ kubectl get nodes -o=custom-columns=NAME:.metadata.name,CAPACITY:.status.capacity.pods
   :: in this command node Capacity showing 
   
-$ kubectl logs --since=6h admin-portal-58b89549bf-8kf8l | grep ERROR   >> it showing 5 hours logs in this command
+$ kubectl logs --since=6h admin-portal-58b89549bf-8kf8l | grep ERROR  || >> it showing 5 hours logs in this command
 
-$ kubectl logs --tail=50 <pod_name>                |>>Get the most recent 50 lines of logs for a pod
+$ kubectl logs --tail=50 <pod_name>                ||>>Get the most recent 50 lines of logs for a pod
 
-$ kubectl logs -c <container_name> <pod_name>      |>>Print the logs for a container in a pod
+$ kubectl logs -c <container_name> <pod_name>      ||>>Print the logs for a container in a pod
 
-$ kubectl logs <pod_name> --all-containers         |>>View the logs for all containers in a pod
+$ kubectl logs <pod_name> --all-containers         ||>>View the logs for all containers in a pod
 
-$ kubectl logs --previous <pod_name>               |>> it showing previous loggs
+$ kubectl logs --previous <pod_name>               ||>> it showing previous loggs
 
-$ kubectl get ep -n staging                        |>> it showing end points all pods  ip also ..name & endpoint::ips & pod age ? 
+$ kubectl get ep -n staging                        ||>> it showing end points all pods  ip also ..name & endpoint::ips & pod age ?
 
+$ kubectl top pods -A                              ||>> in this command using it'showing  cpu && memory  
 
+$ 
+                   
 ..................................................................
 HOW TO SEE POD CPU AND MEMORY UTILTYS    how to see pod memory cpu 
 ....................................................................
@@ -92,9 +95,9 @@ install krew
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
   Deployment commands
 ...................................................................................
-kubectl get deployemts   || it showing deployents 
-kubectl get deployment -n "namespace"   | showing deplotments
-kubectl get all -n staging | it showing in namespace inside all running show it
+kubectl get deployemts                  || it showing deployents 
+kubectl get deployment -n "namespace"   || showing deplotments
+kubectl get all -n staging              || it showing in namespace inside all running show it
 kubectl set image deployment "deployment_name" nginx=nginx:latest    || in this command set the image new version
 kubectl scale deployment "D_name" --replicas=1 or                    || 1 etc depends
 kubectl rollout histroy deployment "D_NAME"                          || it showing history in deployments
