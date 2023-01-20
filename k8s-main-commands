@@ -103,3 +103,22 @@ kubectl scale deployment "D_name" --replicas=1 or                    || 1 etc de
 kubectl rollout histroy deployment "D_NAME"                          || it showing history in deployments
 kubectl rollout history deployment "D_Name" --revision=1             ||  it showing how many time rollouts and showing paticular give 1,2,3
 kubectl rollout undo deployment "D_Name" --revision=2                ||  in this command i tack to back 2  in this commad using  
+--------------------------------------------------------------------------------------------------------------------------
+how to check pod events 
+---------------------------------------------------------------------------------------------------------------------------
+kubectl get events --output json -n staging
+kubectl get postgres-8ltrl events --output json
+kubectl get postgres-8ltrl events --output json
+kubectl get events user-0 -n staging
+kubectl get events -n staging
+kubectl get events
+kubectl get events -nstaging
+kubectl get events -n staging 
+kubectl events pod claim-0 -n staging
+kubectl get events pod claim-0 -n staging
+kubectl get events pods -n staging
+kubectl get events -n staging  | grep -i $claim-0
+kubectl get events --all-namespaces  | grep -i $podname
+kubectl get events --all -n staging  | grep -i $podname
+--------------------------------------------------------------------------------------------------
+
