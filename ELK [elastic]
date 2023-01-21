@@ -1,0 +1,64 @@
+https://www.elastic.co/guide/en/elasticsearch/reference/7.17/install-elasticsearch.html#_installing_elasticsearch_yourself
+version : 7.17
+im choosing linux
+Install Elasticsearch from archive on Linux or MacOS
+
+............................................................................
+The Linux archive for Elasticsearch v7.17.8 can be downloaded and installed as follows:
+
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.8-linux-x86_64.tar.gz
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.8-linux-x86_64.tar.gz.sha512
+shasum -a 512 -c elasticsearch-7.17.8-linux-x86_64.tar.gz.sha512 
+tar -xzf elasticsearch-7.17.8-linux-x86_64.tar.gz
+cd elasticsearch-7.17.8/ 
+
+Elasticsearch can be started from the command line as follows:
+
+./bin/elasticsearch 
+      or choose your 
+./bin/elasticsearch -d -p pid 
+
+  then create a one User,
+  useradd elastic
+  passwd  elastic
+  
+  cd ../ go to back and 
+  
+  curl http://localhost:9200   {use this it showing ....}
+  
+  
+  .............................................................
+  Download kibana >>>>>>>>>>>>>>>>>>>>>>>>
+  .............................................................
+   https://www.elastic.co/guide/en/kibana/7.17/targz.html#targz
+   The Linux archive for Kibana v7.17.8 can be downloaded and installed as follows:
+   
+   
+
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.8-linux-x86_64.tar.gz
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.8-linux-x86_64.tar.gz.sha512
+shasum -a 512 -c elasticsearch-7.17.8-linux-x86_64.tar.gz.sha512 
+tar -xzf elasticsearch-7.17.8-linux-x86_64.tar.gz
+cd elasticsearch-7.17.8/ 
+
+ls -l
+cd config
+ls -l
+vim kibana.yml
+## ip address  off elastic  search custor client  ip 
+elasticsearch.hosts: ["ip"]
+search command how to see your ip  :: ip a >> showing ip 172.31.45.21
+
+vim /config/kibana.yml
+#server.host: "172.31.45.21"
+
+HOW  TO START KIBANA SERVICE?
+## ip address of server where you are installing kibana
+servicehost: "172.31.45.21"
+./bin/kibana
+OR
+nohup ./bin/kibana &
+
+
+
+
