@@ -1,0 +1,57 @@
+    1 .....ls -ll
+   
+    2 df -h
+    3  fdisk -l
+    4  sudo fdisk -l
+    5  lsblk
+    6  cat >f5
+    7  ls -l | grep "f5"
+    8  rf "f5"
+    9  rf -f f5 
+   10  rm -f  f5 
+   11  mkfs.ext4 /dev/xvdf
+   12  !
+   13  sudo mkfs.ext4 /dev/xvdf
+   14  mkdir app5
+   15  mount -t ext4 /dev/xvdf app5
+   16  sudo mount -t ext4 /dev/xvdf app5
+   17  ls -l.
+   18  ls -l
+   19  cd app5
+   20  ls
+   21  vim lost+found/
+   22  cd ..
+   23  vi /etc/fstab
+   24  sudo su -
+   25  ls -l
+   26  cd app5
+   27  ls
+   28  touch {file1..file10}
+   29  sudo touch {file1..file10}
+   30  ls -ll
+   31  sudo touch {a..z}
+   32  ls -ll
+   33  sudo touch {a..z} | grep "ec2"
+   34  ls -ll
+   35  vim c
+   36  vim a
+   37  cat >a
+   38  sudo cat >a
+   39  sudo cat >>a
+   40  pwd
+   41  usermod -aG ubuntu sudo 
+   42  usermod -aG  sudo  ubuntu
+   43  sudo usermod -aG  sudo  ubuntu
+   44  usermod -aG  sudo  ubuntu
+   45  apt update
+   46  sudo apt update
+   47  df -h
+   48  cd ..
+   49  clear
+   50  df -h
+   51  resize2fs /dev/xvdf
+   52  sudo resize2fs /dev/xvdf
+   53  df -h
+   54  ls -l
+   55  cd app5/
+   
