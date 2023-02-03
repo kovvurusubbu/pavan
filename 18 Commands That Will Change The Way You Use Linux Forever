@@ -1,0 +1,45 @@
+cd /etc/
+eat /pushd /var/
+cd .config/
+cd /etc/
+ls -ll
+vim /etc/ssh/sshd_config     no edit any think go back 
+htop          // it showing total memory cpu 
+
+history
+example :=>  1809:kubectl get po
+commnad $ !1809   it run that command 
+
+$ HISTTIMEFORMAT="%Y-%m-%d %T"     In this command give date%time%mount%year
+   example:1994  2023-02-03 13:43:09cd ~
+           1995  2023-02-03 13:46:23cd /etc/
+           1996  2023-02-03 13:46:35pushd /var/
+           1997  2023-02-03 13:47:09!
+           1998  2023-02-03 13:47:38cd ~
+           1999  2023-02-03 13:48:36cd .config/
+           2000  2023-02-03 13:48:45cd ..
+           2001  2023-02-03 13:48:54cd /etc/
+           2002  2023-02-03 13:49:31ls -l
+           
+           
+$ nano ~/.bashrc
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+HISTTIMEFORMAT="%Y-%m-%d %T"               || write up ||
+
+# append to the history file, don't overwrite it
+
+
+$ cmatrix   in this command 
+
+$ reset
+
+$ ls -l; echo "Kube-Node-Usage"
+
+$ ls -l && echo "Kube-Node-Usage"
+
+$
+           
