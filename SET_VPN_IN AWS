@@ -1,0 +1,8 @@
+## To set up a Site-to-Site VPN connection using a "virtual private gateway"
+>> following steps:=
+Step_1: create a customer gateway..?  
+  Open the Amazon VPC console at https://console.aws.amazon.com/vpc/
+  In the navigation pane, choose "Customer gateways" and then Create customer gateway.
+Step_2: create a target gaetway..?
+  
+ 
