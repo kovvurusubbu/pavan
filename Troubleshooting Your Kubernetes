@@ -1,0 +1,77 @@
+Kubernetes pods live troubleshooting - handsOn::::
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+kubectl get pods 
+kubectl logs pod podname  -c containername 
+kubectl exec -it pod_name  -- bin/bash
+kubectl exec -it podname -- bash
+ls -la
+kubectl exec -it pod_name -- tail -f filename  
+kubectl exec -it pod_name -- cat filename 
+ps -aux 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+pod pending status commands
+..............................
+..............................
+kubectl get all -A
+kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl get pods --namespace kube-system
+
+
+
+
+
+
+
+
+
+
+Node_not_ready    >> how to slove this problem
+...............................................
+
+kubectl get pods -n namespace
+kubectl get all -A 
+kubectl describe podname
+kubectl get nodes 
+kubectl describe node   node_name
+sudo kubeadm reset 
+sudo kubeadm init 
+....................................................
+....................................................
+
+5 Simple Tips for Troubleshooting Your Kubernetes Pods
+......................................................
+
+kubectl get pods 
+kubectl describe pod podname
+
+imagepull backup
+...............
+kubectl get pod 
+it showing imagepull backup   how to slove this pronlem 
+
+kubectl edit pod pod_name    / change image name are version
+
+Debuging runcontainer error pod 
+...............................
+kubectl describe pod pod_name 
+cat pod 
+kubectl logs pod pod_name --previous
+kubectl logs pod pod_name -n staging --tail=1
+kubectl exec -it pod_name -n staging -- bash
+ls 
+
+
+
+
+RUN COMMAND INSIDE A POD 
+........................
+kubectl get events
+kubectl get events --short-by=.metadata.creationTimestamp
+kubectl get events --field-selector type=warning
+
+
+
+
+
+
