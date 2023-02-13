@@ -1,0 +1,48 @@
+Go to aws 
+install the ec2 instance 
+create vpc & subnets 
+securty_group , postgres 5432  myip
+
+
+
+go to conscole
+connet to pem file
+example,
+cd download
+ls -l
+pem showing 
+chmod +x pem 
+mv pemfile ~/.ssh
+code ~/.ssh/config
+nano ~/.ssh/config
+Host postgres-on-ec2
+   HostName 54.159.123.255
+   User ubuntu
+   IdentityFile ~/.ssh/postgres-on-ec2.pem
+   IdentitisOnly yes
+   
+   ssh postgres-ec2
+   
+   sudo apt update
+   sudo su postgres
+   command $ psql -U postgres -c "CREATE ROLE  ubuntu;"                | in this command create a role
+   command $ psql -U postgres -c "ALTER ROLE ubuntu WITH LOGIN;"       | IN this command crete a alter_role
+   command $ psql -U postgres -c "ALTER USER ubuntu CREATEDB;"
+   command $ psql -U postgres -c "ALTER USER ubuntu WUTH PASSWORD 'password';"
+
+$ exit
+$ sudo find / -name "postgresql.conf"
+$ sudo nano /etc/postgresql/12/main/postgresql.conf
+  # - Connection Settings -
+
+listen_addresses = '*'          # what IP address(es) to listen on;
+                                        # comma-separated list of addresses;
+                                        # defaults to 'localhost'; use '*' for all
+                                        # (change requires restart)
+port = 5432                             # (change requires restart)
+max_connections = 100                   # (change requires restart)
+
+
+$ sudo find / -name "pg_hba.conf"
+$ sudo nano /etc/postgresql/12/main/pg_hba.conf    || dont change 
+$ sudo systemctl restart postgresql
