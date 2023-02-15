@@ -64,40 +64,40 @@ GO TO AWS
 create eks cluster >>>click   CLUSTER CREATE
 There are 6 steps .
 Step 1:
-$Configure cluster .                   >> name , kubernates version ,, create IAM  select role and create.
+$Configure cluster .                      >> name , kubernates version ,, create IAM  select role and create.
                                                     chose > eks ,
                                                                   eks cluster
                                                        all next click
   
 Step 2
-Specify networking.                   >>   create vpc and subnet , securtyGroup    <create are not your choise >                 >> and   Next all click
+Specify networking.                       >>   create vpc and subnet , securtyGroup    <create are not your choise >                 >> and   Next all click
 
 Step 3
-Configure logging.                     >> next all  click
+Configure logging.                        >> next all  click
 
 Step 4
-Select add-ons.                         >> next all click 
+Select add-ons.                           >> next all click 
 Step 5
 Configure selected add-ons settings.      >> next all click
 
 Step 6
-Review and create.                    >> next all 
+Review and create.                        >> next all 
 
 >>>>>>>> How to create node in EKS  >>>>>>>>> 
 Go to Cluster  ....
 Click .
-and click   >>[  Compute   ]
- Add Node Group     >> click
+and click                                 >>[  Compute   ]
+ Add Node Group                           >> click
 
     Step 1,
-    Configure node group    >>          Name , Node IAM role, 
+    Configure node group                  >>  Name , Node IAM role, 
     policy name >>   {{ * AmazonEKSWorkerNodePolicy	* AmazonEC2ContainerRegistryReadOnly   * AmazonEKS_CNI_Policy    }}   ( 3 policys must and shoud )
    
     Step 2
     Set compute and scaling configuration >>  all next click
 
     Step 3
-    Specify networking  >>  all nect click
+    Specify networking                   >>  all nect click
 
     Step 4
     Review and create  >>      NEXT   >> CREATE 
