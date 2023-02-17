@@ -1,0 +1,11 @@
+sudo apt-get purge anydesk
+sudo apt-get autoclean
+sudo apt-get autoremove
+sudo apt update
+sudo apt list --upgradable
+sudo apt upgrade -y
+https://download.anydesk.com/linux/anydesk_4.0.0-1_amd64.deb
+sudo dpkg -i anydesk_4.0.0-1_amd64.deb
+sudo apt install -f
+sudo apt update
+anydesk
