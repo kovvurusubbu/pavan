@@ -1,5 +1,7 @@
-CLOUD__SHELL 
+https://youtu.be/Gg9-L9_M0Uc
 
+CLOUD__SHELL 
+-------------in gcp 
 1 Enable APIs
 2 Create application compute instance 
 3 add instances to unmanged instance group 
@@ -9,16 +11,14 @@ CLOUD__SHELL
 7 configure forwarding rules 
 8 configure load balancer firewall rule.
 9 Add backebd services to instance groups and configure scaling
-10 Create loada testing instances
+10 Create load testing instances
 11 Generate load
 12 Create and configure storage bucket 
-
-
-
-
-
-
-
+13 update URL map and add backend bucket 
+14 Enable CDN
+15 Generate load
+16 change mode 
+17 Quit
 
 
 
@@ -78,12 +78,43 @@ commands gcli
     
         how to check  go to gcp and search vpc_network,,firewall rules  
       
-    9$ gcloud compute backend-services  add-backend-service --balancing-mode UTILIZATION --max-utilization 0.8 --c apacity-scaler 1 --instance group "instance_group_name" --instance-group-zone us-centrall-b --global ## crete a backend service
-       
+    9$ gcloud compute backend-services  add-backend 'instnce_name' --balancing-mode UTILIZATION --max-utilization 0.8 --c apacity-scaler 1 --instance group "instance_group_name" --instance-group-zone us-centrall-b --global ## crete a backend service
+       gcloud compute backend-services  add-backend 'instance_name' --balancing-mode UTILIZATION --max-utilization 0.8 --c apacity-scaler 1 --instance group "instance_group_name" --instance-group-zone us-centrall-b --global
+         
+         how check go to gcp,vpcnetowrk,backends
+      
+      
+    10$  gcloud compute instance create asia-loadtest --network default --zone asia-east-b --metadata startup-script='apt-get install siege -y' --preemptible ## create siega load testing instance
+         gcloud compute instances create europe-loadtest --network default --zone europe-west1-b --metadata startup-script='apt-get install siege -y --preemptible  ## create load esting instance
+         gcloud compute instances create us-loadtest --network default --zone us-central-b --metadata startup-script='apt-get install siege -y --preemptible  ## create load esting instance
+          
+          How to check go to gcp,compute engine vm_instanc
+          
+          
+    11$ gcloud compute ssh --quiet --zone asia-east-b asia-loadtest --command="siege -c150 http://107.178.253.161/" &  # to genrate load 
+        the server is now under siege gcloud compute ssh --quiet --zone asia-east-b asia-loadtest --command="siege -c150 http://107.178.253.161/video/" &  ## to generte load 
         
-      
-      
-      
+        
+        
+    12$ gsutil mb -1 europe-west4 gs://'bucket_name' ## create a bucket 
+        gustil iam ch allUsers:objectViewer gs://'bucket_name' ## to macke the bucket policy accessible
+        gustil cp /home/googleh4721894_student/gcpdemos/projects/computeengine/loadbalancing/20mb.jpg gs://'bucket_name'/static/ # to copy file
+        
+         How to check go to gcp and click storage  buckets
+        
+        
+    13$ gcloud compute backend-buckets create static-backend-bucket --gcs-bucket-name 'bucket_name'   # create backend bucket create
+        gcloud compute url-maps remove-path-matcher www-url-map --path-matcher-name pathmap   ## to remove existing path matchers
+        
+        
+        
+        
+   14$ gcloud compute backend-buckets update static-backend-bucket --enable-cdn # to enable cdn
+       
+       
+   15$ gcloud compute ssh --zone asia-east1-b asia-loadtest --command="for i in  {1..10};do curl -s -w '% {time_total}\n' -o /dev/null http://"instance_ip"/static /30mb.jpg; done" & to generate load
+    
+    
       
       
       
