@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Set the S3 bucket name and AWS region
+S3_BUCKET_NAME="your-s3-bucket-name"
+AWS_REGION="your-aws-region"
+
+# Get the list of pods
+PODS=$(kubectl get pods -o=name)
+
+# Loop through the pods and get the logs
+for POD in $PODS
+do
+  LOGS=$(kubectl logs -f $POD)
+  
+  # Get the pod name and create a unique filename for the logs
+  POD_NAME=$(echo $POD | cut -d'/' -f 2)
+  FILENAME="${POD_NAME}-$(date +%Y%m%d%H%M%S).log"
+  
+  # Upload the logs to S3
+  echo "$LOGS" | aws s3 cp - s3://$S3_BUCKET_NAME/$FILENAME --region $AWS_REGION
+done
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#!/bin/bash
+
+# Set the S3 bucket name and AWS region
+S3_BUCKET_NAME="your-s3-bucket-name"
+AWS_REGION="your-aws-region"
+
+# Set the IAM role to be used by the pods
+IAM_ROLE="your-iam-role"
+
+# Set the log directory
+LOG_DIR="/var/log/pods"
+
+# Create the log directory if it doesn't exist
+mkdir -p $LOG_DIR
+
+# Get the list of pods
+PODS=$(kubectl get pods -o=name)
+
+# Loop through the pods and get the logs
+for POD in $PODS
+do
+  # Get the pod name
+  POD_NAME=$(echo $POD | cut -d'/' -f 2)
+
+  # Get the container names
+  CONTAINERS=$(kubectl get pods $POD_NAME -o jsonpath='{.spec.containers[*].name}')
+
+  # Loop through the containers and get the logs
+  for CONTAINER in $CONTAINERS
+  do
+    # Get the logs
+    kubectl logs $POD_NAME $CONTAINER > $LOG_DIR/$POD_NAME-$CONTAINER.log
+    
+    # Upload the logs to S3
+    aws s3 cp $LOG_DIR/$POD_NAME-$CONTAINER.log s3://$S3_BUCKET_NAME/$POD_NAME/$CONTAINER/ --region $AWS_REGION --acl private --metadata '{"Content-Type":"text/plain"}' --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --quiet
+  done
+done
