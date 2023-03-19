@@ -1,0 +1,176 @@
+1 Create a KrakenD configuration file: KrakenD requires a configuration file to define the API gateway endpoints and routes. You can create a krakend.json file and define your endpoints and routes in it.
+   {
+    "$schema": "https://www.krakend.io/schema/v3.json",
+    "version": 3,
+    "endpoints": [
+      {
+        "endpoint": "/api/...",
+        "method": "GET",
+        "output_encoding": "json",
+        "backend": [
+          {
+            "url_pattern": "/api/...",
+            "host": ["https://api.inbox.in"],
+            "encoding": "json",
+            "method": "GET",
+            "timeout": "5s"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/policy",
+        "method": "GET",
+        "output_encoding": "json",
+        "backend": [
+          {
+            "url_pattern": "/api/policy",
+            "host": ["https://api.ininbox.in"],
+            "encoding": "json",
+            "method": "GET",
+            "timeout": "5s"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/cm",
+        "method": "GET",
+        "output_encoding": "json",
+        "backend": [
+          {
+            "url_pattern": "/api/cm",
+            "host": ["https://api.inuran.in"],
+            "encoding": "json",
+            "method": "GET",
+            "timeout": "5s"
+          }
+        ]
+      }
+    ]
+  }
+  
+2 Create a Dockerfile: To deploy KrakenD to Kubernetes, you can create a Docker image of KrakenD with your configuration file included. You can create a Dockerfile with the following contents:
+
+     FROM devopsfaith/krakend:latest
+     COPY krakend.json /etc/krakend/krakend.json
+     CMD ["/usr/local/bin/krakend"],
+
+
+3 Build and push the Docker image: After creating the Dockerfile, you can build the Docker image and push it to a container registry that Kubernetes can access.
+
+   docker build -t kovvurusubbu77/my-krakend-image .
+   docker tag image_name kovvurusubbu77/image_name
+   docker push image_name 
+   
+   
+
+4 Create a Kubernetes deployment: You can create a Kubernetes deployment 
+  that specifies the number of replicas and the container image to use. You can also define environment variables for KrakenD,such  as the port number and log level.
+    
+    yaml:
+
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: my-krakend-deployment
+        spec:
+          replicas: 3
+          selector:
+          matchLabels:
+            app: my-krakend
+          template:
+            metadata:
+              labels:
+                 app: my-krakend
+            spec:
+              containers:
+              - name: krakend
+                image: my-krakend-image
+                ports:
+                - containerPort: 8080
+                env:
+                - name: KRAKEND_LOG_LEVEL
+                  value: DEBUG
+
+5 Create a Kubernetes service: You can create a Kubernetes service that exposes 
+  the KrakenD deployment to the cluster. You can define the port number to use and the type of service, such as ClusterIP, NodePort, or LoadBalancer.
+
+    yaml:
+
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: my-krakend-service
+      spec:
+        selector:
+           app: my-krakend
+        ports:
+        - name: http
+        port: 80
+        targetPort: 8080
+        type: ClusterIP
+
+6 Deploy to Kubernetes: After creating the deployment and service YAML files, you can deploy KrakenD to Kubernetes using the following command:
+
+ commands:
+
+  kubectl apply -f my-krakend-deployment.yaml
+  kubectl apply -f my-krakend-service.yaml
+
+
+
+   You can access the KrakenD API gateway by using the service's IP address and port number.
+
+-------------------------------------------------------------------------------------------------
+
+{
+  "version": 2,
+  "endpoints": [
+    {
+      "endpoint": "/api/order",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "//.",
+          "host": [""],
+          "encoding": "json",
+          "method": "GET",
+          "timeout": "3s"
+        }
+      ]
+    },
+    {
+      "endpoint": "",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/api/policy",
+          "host": [""],
+          "encoding": "json",
+          "method": "GET",
+          "timeout": "3s"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/claim",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "",
+          "host": [""],
+          "encoding": "json",
+          "method": "GET",
+          "timeout": "3s"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+it is working 
+done.
