@@ -1,0 +1,250 @@
+This only 5 hours logs take 
+
+#!/bin/bash
+
+# Set the base output folder
+BASE_OUTPUT_FOLDER="/home/subbu/staging"
+
+# Create a new folder with a timestamp
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+OUTPUT_FOLDER="${BASE_OUTPUT_FOLDER}/${TIMESTAMP}"
+mkdir -p $OUTPUT_FOLDER
+
+# Get a list of all pods in the "staging" namespace
+POD_LIST=$(kubectl get pods -n staging -o name)
+
+# Loop through each pod and extract logs
+for POD in $POD_LIST
+do
+    POD_NAME=$(echo $POD | cut -d'/' -f2) # Extract the pod name from the full pod URL
+    LOG_FILE="${OUTPUT_FOLDER}/${POD_NAME}.log" # Set the name of the log file
+    kubectl logs $POD -n staging --since=5h >> $LOG_FILE # Append the logs to the log file
+done
+
+
+
+=========================================================================================
+everyDay_logs_script
+
+#!/bin/bash
+
+# Set the base output folder
+BASE_OUTPUT_FOLDER="/home/subbu/ALL_STAGING_LOGS"
+
+# Create a new folder with the current date
+STAGING_FOLDER="${BASE_OUTPUT_FOLDER}/$(date +"%Y-%m-%d")"
+mkdir -p $OUTPUT_FOLDER
+
+# Loop indefinitely to collect logs every hour
+while true
+do
+    # Get a list of all pods in the "staging" namespace
+    POD_LIST=$(kubectl get pods -n staging -o name)
+
+    # Loop through each pod and extract logs
+    for POD in $POD_LIST
+    do
+        POD_NAME=$(echo $POD | cut -d'/' -f2) # Extract the pod name from the full pod URL
+        LOG_FILE="${STAGING_FOLDER}/${POD_NAME}-$(date +"%Y-%m-%d_%H:%M:%S").log" # Set the name of the log file with the current date and time
+        kubectl logs $POD -n staging >> $LOG_FILE # Append the logs to the log file
+    done
+    
+    # Wait for an hour before collecting logs again
+    sleep 3600
+    
+    # Create a new folder with the current date
+    STAGING_FOLDER="${BASE_OUTPUT_FOLDER}/$(date +"%Y-%m-%d")"
+    mkdir -p $STAGING_FOLDER
+done
+
+======================================================================================
+
+ this is every 5 hous create a new folder and delete old folder 
+ 
+#!/bin/bash
+
+# Set the base output folder
+BASE_OUTPUT_FOLDER="/home/subbu/Downloads/24_logs"
+
+# Create a new folder with the current date and time
+OUTPUT_FOLDER="${BASE_OUTPUT_FOLDER}/$(date +"%Y-%m-%d_%H-%M-%S")"
+mkdir -p $OUTPUT_FOLDER
+
+# Keep track of the last time a folder was created
+LAST_FOLDER_CREATED=$(date +%s)
+
+# Loop indefinitely to collect logs every hour
+while true
+do
+    # Get the current time
+    CURRENT_TIME=$(date +%s)
+
+    # If 5 hours have passed since the last folder creation, create a new folder
+    if (( CURRENT_TIME - LAST_FOLDER_CREATED >= 18000 )); then
+        OUTPUT_FOLDER="${BASE_OUTPUT_FOLDER}/$(date +"%Y-%m-%d_%H-%M-%S")"
+        mkdir -p $OUTPUT_FOLDER
+        LAST_FOLDER_CREATED=$CURRENT_TIME
+    fi
+    
+    # Get a list of all pods in the "staging" namespace
+    POD_LIST=$(kubectl get pods -n staging -o name)
+
+    # Loop through each pod and extract logs
+    for POD in $POD_LIST
+    do
+        POD_NAME=$(echo $POD | cut -d'/' -f2) # Extract the pod name from the full pod URL
+        LOG_FILE="${OUTPUT_FOLDER}/${POD_NAME}-$(date +"%Y-%m-%d_%H:%M:%S").log" # Set the name of the log file with the current date and time
+        kubectl logs $POD -n staging >> $LOG_FILE # Append the logs to the log file
+    done
+    
+    # If 24 hours have passed since the last folder creation, create a new folder and delete old folders
+    if (( CURRENT_TIME - LAST_FOLDER_CREATED >= 86400 )); then
+        # Create a new folder with the current date and time
+        OUTPUT_FOLDER="${BASE_OUTPUT_FOLDER}/$(date +"%Y-%m-%d_%H-%M-%S")"
+        mkdir -p $OUTPUT_FOLDER
+
+        # Delete folders older than 7 days
+        find $BASE_OUTPUT_FOLDER/* -type d -ctime +7 -exec rm -rf {} \;
+
+        # Update the last folder creation time
+        LAST_FOLDER_CREATED=$CURRENT_TIME
+    fi
+    
+    # Wait for an hour before collecting logs again
+    sleep 3600
+done
+
+=======================================================================================
+
+#!/bin/bash
+#!/bin/bash
+
+# Set the base output folder
+BASE_OUTPUT_FOLDER="/home/subbu/ALL_STAGING_LOGS"
+
+# Create a new folder with a timestamp
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+OUTPUT_FOLDER="${BASE_OUTPUT_FOLDER}/${TIMESTAMP}"
+mkdir -p $OUTPUT_FOLDER
+
+# Get a list of all pods in the "staging" namespace
+POD_LIST=$(kubectl get pods -n staging -o name)
+
+# Loop through each pod and extract logs
+for POD in $POD_LIST
+do
+    POD_NAME=$(echo $POD | cut -d'/' -f2) # Extract the pod name from the full pod URL
+    LOG_FILE="${OUTPUT_FOLDER}/${POD_NAME}.log" # Set the name of the log file
+    kubectl logs $POD -n staging --since=5h >> $LOG_FILE # Append the logs to the log file
+done
+
+# Delete folders older than 5 days
+find $BASE_OUTPUT_FOLDER -type d -mtime +5 -exec rm -rf {} \;
+
+
+
+=====================================================================================if
+
+#!/bin/bash
+
+# Set the base output folder
+BASE_OUTPUT_FOLDER="home/subbu/ALL_STAGING_LOGS"
+
+# Create a new folder with a timestamp
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+OUTPUT_FOLDER="${BASE_OUTPUT_FOLDER}/${TIMESTAMP}"
+mkdir -p $OUTPUT_FOLDER
+
+# Get a list of all pods in the "staging" namespace
+POD_LIST=$(kubectl get pods -n staging -o name)
+
+# Loop through each pod and extract logs
+for POD in $POD_LIST
+do
+    POD_NAME=$(echo $POD | cut -d'/' -f2) # Extract the pod name from the full pod URL
+    LOG_FILE="${OUTPUT_FOLDER}/${POD_NAME}.log" # Set the name of the log file
+    kubectl logs $POD -n staging >> $LOG_FILE # Append the logs to the log file
+done
+
+# Check if it's been a week since the last folder was created
+LAST_TIMESTAMP=$(ls -t $BASE_OUTPUT_FOLDER | head -n1)
+LAST_TIMESTAMP_SECONDS=$(date -d $LAST_TIMESTAMP +%s)
+CURRENT_TIMESTAMP_SECONDS=$(date +%s)
+if [ $(($CURRENT_TIMESTAMP_SECONDS - $LAST_TIMESTAMP_SECONDS)) -ge $((7*24*60*60)) ]
+then
+    # Delete the oldest folder and create a new one with the current timestamp
+    OLDEST_FOLDER=$(ls -t $BASE_OUTPUT_FOLDER | tail -n1)
+    rm -rf "${BASE_OUTPUT_FOLDER}/${OLDEST_FOLDER}"
+    NEW_TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+    OUTPUT_FOLDER="${BASE_OUTPUT_FOLDER}/${NEW_TIMESTAMP}"
+    mkdir -p $OUTPUT_FOLDER
+fi
+
+
+
+
+
+======================================================================================n
+
+#!/bin/bash
+
+DIRECTORY="dir"
+BUCKET_NAME="my-gcs-bucket"
+
+if [ ! -d "$DIRECTORY" ]; then
+    mkdir "$DIRECTORY"
+fi
+
+echo "List the pod names..."
+PODS_LIST=$(kubectl get pods --namespace staging | awk '{print $1}' | sed '1d')
+for POD_NAME in $PODS_LIST
+do
+    kubectl logs "$POD_NAME" --namespace staging | grep error > "$DIRECTORY/$POD_NAME-$(date +'%Y-%m-%d').log"
+    gsutil cp "$DIRECTORY/$POD_NAME-$(date +'%Y-%m-%d').log" "gs://$BUCKET_NAME/$POD_NAME/"
+    echo "$POD_NAME"
+done
+
+
+
+
+=======================================================================mkdir
+
+
+#!/bin/bash
+
+DIRECTORY="dir"
+BUCKET_NAME="my-gcs-bucket"
+
+if [ ! -d "$DIRECTORY" ]; then
+    mkdir "$DIRECTORY"
+fi
+
+echo "List the pod names..."
+PODS_LIST=$(kubectl get pods --namespace staging | awk '{print $1}' | sed '1d')
+for POD_NAME in $PODS_LIST
+do
+    kubectl logs "$POD_NAME" --namespace staging | grep error > "$DIRECTORY/$POD_NAME-$(date +'%Y-%m-%d').log"
+    gsutil cp "$DIRECTORY/$POD_NAME-$(date +'%Y-%m-%d').log" "gs://$BUCKET_NAME/$POD_NAME/"
+    echo "$POD_NAME"
+done
+
+
+-----------------------postman_code
+
+let body=pm.response.json();
+pm.test("QuoteApi Response-->", function () {  
+    // console.log(body.message);  
+    //  pm.expect(body.code).to.eql(0);      
+    if (body.code !== 0)     {            
+        pm.expect.fail("Failure--> " + body.message);    
+        }
+         else 
+        {         
+            pm.expect("Success--> "+body.message);    
+            }
+    });
+
+
+name_life_saving_quote_api
+
+
