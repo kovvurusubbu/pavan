@@ -45,7 +45,7 @@ $ kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + "
 $  kubectl get pods -o json -n kube-system | jq -r '.items[] | .metadata.name + " \n Container name: " + .spec.containers[].name + " \n Req. RAM: " + .spec.containers[].resources.requests.memory + " \n Lim. RAM: " + .spec.containers[].resources.limits.memory + " \n Req. CPU: " + .spec.containers[].resources.requests.cpu + " \n Lim. CPU: " + .spec.containers[].resources.limits.cpu + " \n Req. Eph. DISK: " + .spec.containers[].resources.requests["ephemeral-storage"] + " \n Lim. Eph. DISK: " + .spec.containers[].resources.limits["ephemeral-storage"] + "\n"' 
    ::This recursively will duplicate containers and pods, you can check it, just add container name.
    
-{$ kubectl get po -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image'                             ||>> in this command it showing pods images.ip.
+{$ kubectl get po -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image'                             ||>> in this command it showing all pods images.ip.
 {$ kubectl get po -n staging -o custom-columns=name:.metadata.name,status:.status.phase,image:'.spec.containers[0].image' | grep podname   || in this command shoing image ip 
 
 $ kubectl get no -o json | jq -r '.items | sort_by(.status.capacity.memory)[]|[.metadata.name,.status.capacity.memory]'                    ||>> in this command it showing nodes internal ip's
