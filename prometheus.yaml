@@ -32,12 +32,10 @@ data:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
-
     alerting:
       alertmanagers:
        - static_configs:
           - targets: ['a9ebf10af726b44c1a12df07379f9f21-603559460.ap-south-1.elb.amazonaws.com:80']
-
     scrape_configs:
       - job_name: 'prometheus'
         static_configs:
@@ -103,4 +101,3 @@ spec:
       port: 80
       targetPort: 9090
   type: LoadBalancer        
-
