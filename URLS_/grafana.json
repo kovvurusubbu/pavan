@@ -1,0 +1,31 @@
+Monitoring is a critical component of any DevOps strategy. Today, I want to share a list of GitHub repositories that have helped me with DevOps monitoring:
+
+Prometheus - https://lnkd.in/dSc7pumr
+Prometheus is an open-source monitoring system that collects metrics from monitored targets and stores them in a time-series database.
+
+Grafana - https://lnkd.in/dZQVYGjj
+Grafana is an open-source platform for monitoring and analyzing metrics and logs from various sources.
+
+ELK Stack - https://lnkd.in/dZpSEkYM
+The ELK Stack is a set of open-source tools consisting of Elasticsearch, Logstash, and Kibana, used for centralizing and analyzing logs.
+
+Telegraf - https://lnkd.in/dwBFVR3s
+Telegraf is a plugin-driven server agent for collecting and reporting metrics.
+
+InfluxDB - https://lnkd.in/dCjp62pf
+InfluxDB is an open-source time-series database that is optimized for high-performance storage and retrieval of time-series data.
+
+Zabbix - https://lnkd.in/dmDxd7sE
+Zabbix is an open-source monitoring solution that can monitor servers, network devices, and applications.
+
+Nagios - https://lnkd.in/dW-QCSWb
+Nagios is a powerful monitoring system that can monitor hosts, services, and network devices
+
+Icinga - https://lnkd.in/dCPy2EuF
+Icinga is an open-source monitoring system that can monitor hosts, services, and network devices.
+
+Sensu - https://lnkd.in/dzmB9fEh
+Sensu is a monitoring and automation platform that can monitor infrastructure, applications, and services.
+
+Jaeger - https://lnkd.in/dycc_VRd
+Jaeger is an open-source distributed tracing system used for monitoring and troubleshooting microservices-based distributed systems.
