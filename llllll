@@ -1,0 +1,23 @@
+helm show values prometheus-community/prometheus > prometheus_values.yaml
+
+helm install prometheus prometheus-community/prometheus --values prometheus_values.yaml -n monitoring
+
+helm uninstall prometheus -n monitoring
+
+helm uninstall prometheus -n monitoring
+helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring
+
+kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
+
+helm uninstall prometheus -n monitoring
+
+helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring
+
+kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
+
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+https://chrisedrego.medium.com/monitoring-nginx-ingress-controller-with-prometheus-grafana-d66d204e61c8
+
+https://docs.nginx.com/nginx-ingress-controller/logging-and-monitoring/prometheus/#:~:text=Run%20the%20Ingress%20Controller%20with,port%20command%2Dline%20argument).
+fjf-wwao-uot
