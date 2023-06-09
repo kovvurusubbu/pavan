@@ -104,7 +104,7 @@ and click                                 >>[  Compute   ]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&7
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    AND SETUP.... LOCAL   ,, HOW TO SETUP EKS    .. SEE   ALL   STEPS...? 
+    AND SETUP.... LOCAL   ,, HOW TO SETUP EKS    .. SEE   ALL   STEPS...?  youtube video>> https://youtu.be/R0H1-kdeQ_c
 
     Then  local setup >> tack ec2 instance connect ssh 
     Then , eks setup
@@ -151,6 +151,10 @@ $ aws eks --region ap-south-1 describe-cluster --name grafan-prometheus --query 
 
 $ aws eks --region  ap-south-1 update-kubeconfig --name  >grafan-prometheus<                                                                        || >> In this name clustername 
   aws eks --region ap-south-1 update-kubeconfig --name  > CLUSTERNAME <  
+  
+  
+ aws eks --region ap-south-1 describe-cluster --name hello-world --query cluster.status
+ aws eks --region  ap-south-1 update-kubeconfig --name  hello-world
                               
 $ kubectl get nodes
 $ kubectl get svc
