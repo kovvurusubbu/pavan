@@ -1,0 +1,181 @@
+Tr-SBU
+
+Security - permissions
+class_tapies
+replica
+index
+backup
+restore
+migration
+
+
+Installation:- Mongo : --> https://www.mongodb.com/docs/v4.4/tutorial/install-mongodb-on-ubuntu/
+
+systemctl status mongod
+systemctl stop mongod
+systemctl restart mongod
+systemctl start mongod
+
+mongo --> Loge in to mongo
+
+User creations:
+================
+db.getSiblingDB('admin').createUser(
+   {
+     user: "Spiderman",
+     pwd: "Peter", 
+    "roles" : [ 'root' ],
+})
+
+Log in to mongo: 
+================
+
+mongo --authenticationDatabase admin -u Spiderman -p Peter --port 27017
+
+
+default config: /etc/mongod.conf 
+default logFile: /var/log/mongodb/mongod.log 
+
+
+security:
+  keyFile: /etc/mongodb-keyfile
+  authorization: enabled
+
+replication:
+  replSetName: Avengers
+
+Keyfile Path:
+=============
+openssl rand -base64 756 > <path-to-keyfile>
+chmod 400 <path-to-keyfile>
+
+rs.initiate()
+rs.status()
+rs.Add(<IP:Port>) --> Local Host IP or server IP
+
+===========
+
+Create
+Read
+Update
+Delete
+
+CRUD:
+=====
+use subbu
+db.movies.find()
+db.movies.count()
+db.movies.insert({A:1})
+db.movies.remove({A:1})
+db.movies.update({A:1},{A:2,B:3})
+
+===========
+
+Indexes:
+
+Index is the key, Which will improves the perfomance of the queries, which fetch the data to avaoide the more resource consumptions.
+
+========
+db.movies.getIndexes()
+
+db.movies.createIndex({Num:1}) --> Assending
+db.movies.createIndex({Num:-1}) --> Desending
+
+Compound Indexes:
+db.movies.createIndex({Num:1,Field:1})
+
+===============
+
+mongod ==> Daemon process (Background)
+mongo ==> Client process
+mongotop ==> Monitoring Tool (Validate the db levels)
+mongostat ==> Monioring Tool (Validate the operations)
+mongodump ==> Take the backup in a compreesed way in bson formate
+mongorestore ==> Healp to restore for the data compreesed way in bson formate
+
+Mongodump: 
+==========
+mongodump --authenticationDatabase admin -u Spiderman -p Peter --port 27017 -o /home/ubuntu/test/dump-test/
+
+All dbs and all collections
+
+mongodump --authenticationDatabase admin -u Spiderman -p Peter --port 27017 -o /home/ubuntu/test/dump-test/ --gzip -d subbu -c movies
+
+Particuler db and particulaer collections
+
+mongorestore --authenticationDatabase admin -u Spiderman -p Peter --port 27017  --gzip -d mongo-res -c movies-res /home/ubuntu/test/dump-test/subbu/movies.bson.gz 
+
+mongorestore --authenticationDatabase admin -u Spiderman -p Peter --port 27017  --gzip /home/ubuntu/test/dump-test/
+
+migration
+=========
+DB Source --Server VM : A
+
+Log in to VM A
+DUmp
+mongodump --authenticationDatabase admin -u Spiderman -p Peter --port 27017 -o /home/ubuntu/test/dump-test/
+Move the dump to VM -> B
+{ SCP
+Rsync
+S3 }
+
+Log in to VM: B
+Restore :
+mongorestore --authenticationDatabase admin -u Spiderman -p Peter --port 27017  --gzip /home/ubuntu/test/dump-test/
+DB Destination -- VM: B
+========
+
+Log File:
+========
+free -h
+top --> SHift + m
+load -> w or top
+===========
+
+mongostat --authenticationDatabase admin -u Spiderman -p Peter --port 27017  ==> Monioring Tool (Validate the operations)
+
+===========
+Data Types in mongodb:
+
+============
+
+{
+	A:1,
+	B:'Name'
+}
+
+Number :  <Int, Float, Long>
+Arrays: [ A,B,C,D ]
+Object: {
+	
+}
+
+{
+	User: "subbu",
+	Age: 24,
+	Skils: ["Cpp+", "Java" ]
+	Addres: {
+		Door: '12/4',
+		Streat: 'coll'
+		COlleny: 'ABC'
+		State: 'AP'
+	},
+	Attend: true, 
+
+}
+
+Boolian: < true|false >
+String: "", ' '
+ObjectID: <12 Bytes>
+
+648b48e4d60c7214190df2d8
+
+4 bytes: ==> Time stamp
+3 Bytes: ==> Meta Info
+5 Bytes: ==> Randam Data
+
+=====
+Date() ==> String Foramte
+ISODate() ==> OBJ formate
+=====
+
