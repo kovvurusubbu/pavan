@@ -1,5 +1,6 @@
-this script taking all the  pods logs with namespace  I_M_P
+1 this script tacking all the  pods logs with namespace  I_M_P
 ------------------------------------------------------------------
+*****************************************************************************
 cat script.sh 
 -------------
 #!/bin/bash
@@ -21,7 +22,36 @@ for pod in $pods; do
 done
 
 ===============================================================================================================================>>
-this is script id not create dir..?
+*****************************************************************************
+2 below script is tacking only one deployment_log
+---------------------------------------------
+#!/bin/bash
+
+# Set variables
+DEPLOYMENT_NAME="channel-partners-api"
+LABEL_SELECTOR="app=$DEPLOYMENT_NAME"
+NAMESPACE="staging"
+GCS_BUCKET="inbox-staging-logs"
+
+# Get current date and time
+CURRENT_TIME=$(date +"%Y-%m-%d_%H-%M-%S")
+
+# Get pod name associated with the deployment
+POD_NAME=$(kubectl get pods -l $LABEL_SELECTOR -n $NAMESPACE --output=jsonpath='{.items[0].metadata.name}')
+
+# Check if pod name is empty
+if [ -z "$POD_NAME" ]; then
+  echo "Error: No pod found for deployment $DEPLOYMENT_NAME in namespace $NAMESPACE"
+  exit 1
+fi
+
+# Stream logs from the pod to GCS with current date and time
+echo "Streaming logs for pod $POD_NAME at $CURRENT_TIME"
+kubectl logs -n $NAMESPACE $POD_NAME --all-containers=true --timestamps=true | gsutil cp - gs://$GCS_BUCKET/$NAMESPACE/$POD_NAME-$CURRENT_TIME.log
+
+================================================================================================================================>>
+********************************************************************
+3 this is script do not create dir..?
 on this script given logs two deployment name C , P
 -------------------------------------------------------
 #!/bin/bash
@@ -52,8 +82,8 @@ for DEPLOYMENT_NAME in "${DEPLOYMENT_NAMES[@]}"; do
   kubectl logs -n $NAMESPACE $POD_NAME --all-containers=true --timestamps=true | gsutil cp - gs://$GCS_BUCKET/$NAMESPACE/$POD_NAME-$CURRENT_TIME.log
 done
 ========================================================================================================================================>>
-
-this is script create new Dir.. with date 
+***************************************************************************************
+4 this is script create new Dir.. with date 
 -------------------------------- 
 
 #!/bin/bash
