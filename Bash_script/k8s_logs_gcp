@@ -1,4 +1,6 @@
-1 this script tacking all the  pods logs with namespace  I_M_P
+LOGS----TO GCP_BUCKRT_scripts
+
+1 this script taking all the  pods logs with namespace  I_M_P
 ------------------------------------------------------------------
 *****************************************************************************
 cat script.sh 
@@ -23,7 +25,7 @@ done
 
 ===============================================================================================================================>>
 *****************************************************************************
-2 below script is tacking only one deployment_log
+2 below script is taking only one deployment_log
 ---------------------------------------------
 #!/bin/bash
 
