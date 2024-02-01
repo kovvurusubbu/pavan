@@ -1,3 +1,5 @@
+in aws:-
+--------
 #!/bin/bash
 if [ -d 'directory' ];                                                                           # create a dir ones dir sis there it create  dir 
 then
@@ -14,5 +16,22 @@ do                                                                              
    aws s3 cp K8s/$get_the_pod_name-$(date +'%Y-%m-%d').log s3://data-log-k                        # in this one cp the s3 in folder  all pods logs 
    echo $get_the_pod_name
 done                                                                                              # done means completed
-~                                                                                                                                                                                                          
-~            
+==========================================================================================================================================================================         
+in gcp
+
+#!/bin/bash
+# Set variables
+NAMESPACE="staging"
+GCP_BUCKET="data-log-k"
+
+# Get all pod names in the specified namespace
+pods=$(kubectl get pods -n $NAMESPACE -o jsonpath='{.items[*].metadata.name}')
+
+# Get current date and time
+CURRENT_TIME=$(date +"%Y-%m-%d_%H-%M-%S")
+
+# Stream logs from each pod to the GCP bucket
+for pod in $pods; do
+    echo "Streaming logs for pod $pod at $CURRENT_TIME"
+    kubectl logs -n $NAMESPACE $pod --all-containers=true --timestamps=true | gsutil cp - gs://$GCP_BUCKET/$NAMESPACE/$pod-$CURRENT_TIME.log
+done
