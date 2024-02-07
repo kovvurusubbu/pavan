@@ -1,6 +1,6 @@
 LOGS----TO GCP_BUCKRT_scripts
 
-1 this script taking all the  pods logs with namespace  I_M_P
+1 this script taking all the  pods logs with namespace  {"I_M_P"}
 ------------------------------------------------------------------
 *****************************************************************************
 cat script.sh 
@@ -85,8 +85,8 @@ for DEPLOYMENT_NAME in "${DEPLOYMENT_NAMES[@]}"; do
 done
 ========================================================================================================================================>>
 ***************************************************************************************
-4 this is script create new Dir.. with date 
--------------------------------- 
+4 this is script create new Dir.. with date   ===// ("NOW USE LIKE THIS") //===
+------------------------------------------------------------------------     
 
 #!/bin/bash
 
@@ -120,3 +120,52 @@ for DEPLOYMENT_NAME in "${DEPLOYMENT_NAMES[@]}"; do
   kubectl logs -n $NAMESPACE $POD_NAME --all-containers=true --timestamps=true | gsutil cp - gs://$GCS_BUCKET/$NAMESPACE/$FOLDER_NAME/$POD_NAME-$CURRENT_TIME.log
 done
 ======================================================================================================================================================================================  
+5.below script using the sync
+--------------------------------------------------------------------------------------------------------
+#!/bin/bash
+
+# Set variables
+DEPLOYMENT_NAMES=("channel-partners-api" "premium-calculator")
+NAMESPACE="staging"
+GCS_BUCKET="inbox-staging-logs"
+
+# Get current date and time
+CURRENT_DATE=$(date +"%Y-%m-%d")
+CURRENT_TIME=$(date +"%H-%M-%S")
+
+# Iterate over each deployment name
+for DEPLOYMENT_NAME in "${DEPLOYMENT_NAMES[@]}"; do
+  LABEL_SELECTOR="app=$DEPLOYMENT_NAME"
+
+  # Create folder based on the current date and deployment name
+  FOLDER_NAME="stg-log-$DEPLOYMENT_NAME-$CURRENT_DATE"
+
+  # Get pod names associated with the deployment
+  POD_NAMES=$(kubectl get pods -l $LABEL_SELECTOR -n $NAMESPACE --output=jsonpath='{.items[*].metadata.name}')
+
+  # Check if pod names are empty
+  if [ -z "$POD_NAMES" ]; then
+    echo "Error: No pods found for deployment $DEPLOYMENT_NAME in namespace $NAMESPACE"
+    continue
+  fi
+
+  # Iterate over each pod name
+  for POD_NAME in $POD_NAMES; do
+    # Create a temporary file to store the logs
+    TMP_FILE=$(mktemp)
+
+    # Stream logs from the pod to the temporary file
+    kubectl logs -n $NAMESPACE $POD_NAME --all-containers=true --timestamps=true > $TMP_FILE || { echo "Error: Failed to stream logs for pod $POD_NAME"; continue; }
+
+    # Synchronize the temporary file with the disk
+    sync $TMP_FILE || { echo "Error: Failed to synchronize logs for pod $POD_NAME"; continue; }
+
+    # Stream logs from the temporary file to GCS with current date and time in the specified folder
+    echo "Streaming logs for pod $POD_NAME at $CURRENT_TIME to folder $FOLDER_NAME"
+    gsutil cp $TMP_FILE gs://$GCS_BUCKET/$NAMESPACE/$FOLDER_NAME/$POD_NAME-$CURRENT_TIME.log || { echo "Error: Failed to stream logs for pod $POD_NAME"; continue; }
+
+    # Remove the temporary file
+    rm $TMP_FILE
+  done
+done
+===========================================================================================================================================
