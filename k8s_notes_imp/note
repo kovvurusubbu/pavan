@@ -1,0 +1,72 @@
+🔒 𝐒𝐞𝐜𝐮𝐫𝐢𝐭𝐲 𝐚𝐧𝐝 𝐈𝐝𝐞𝐧𝐭𝐢𝐭𝐲 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭
+- RBAC
+- IAM
+- Authentication
+- Authorization
+- Encryption
+- Firewall
+- Security Context
+- API Access Control
+- Security Policy
+
+⚙️𝐈𝐧𝐟𝐫𝐚𝐬𝐭𝐫𝐮𝐜𝐭𝐮𝐫𝐞 𝐚𝐧𝐝 𝐂𝐨𝐧𝐭𝐫𝐨𝐥 𝐏𝐥𝐚𝐧𝐞
+- Node Operator
+- Control Plane
+- Kubelet
+- API server
+- etcd
+- Kubectl
+
+⚖️ 𝐀𝐮𝐭𝐨 𝐒𝐜𝐚𝐥𝐢𝐧𝐠 & 𝐋𝐨𝐚𝐝 𝐁𝐚𝐥𝐚𝐧𝐜𝐢𝐧𝐠
+- Node Auto-Provisioning
+- Horizontal Node Autoscalar
+- Vertical Node Autoscalar
+- Load Balancer
+- Cluster Autoscalar
+
+🚢 𝐂𝐨𝐧𝐭𝐢𝐧𝐮𝐨𝐮𝐬 𝐈𝐧𝐭𝐞𝐠𝐫𝐚𝐭𝐢𝐨𝐧 & 𝐃𝐞𝐩𝐥𝐨𝐲𝐦𝐞𝐧𝐭
+- GitOPS
+- Canary Deployment
+- Blue-Green Deployment
+- Backpressure
+- Rolling updates
+- Backup, Restore, and Disaster Recovery
+
+📦 𝐏𝐚𝐜𝐤𝐚𝐠𝐞 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 𝐚𝐧𝐝 𝐂𝐨𝐧𝐟𝐢𝐠𝐮𝐫𝐚𝐭𝐢𝐨𝐧
+- Helm
+- Kustomize
+- Operators Framework
+- Environment Variables
+- Init Containers
+- Config sync
+
+🔍 𝐌𝐨𝐧𝐢𝐭𝐨𝐫𝐢𝐧𝐠 𝐚𝐧𝐝 𝐎𝐛𝐬𝐞𝐫𝐯𝐚𝐛𝐢𝐥𝐢𝐭𝐲
+- Metrics Server
+- Audit logging
+- Prometheus
+- Open Telemetry
+- Grafana
+- Tracking
+- Events
+- Logging
+- Log Aggregation
+
+🌐 𝐍𝐞𝐭𝐰𝐨𝐫𝐤𝐢𝐧𝐠
+- Service Mesh
+- Network policy
+- DNS
+- Service Mesh proxy
+- Image Controller
+- API Gateway
+- External DNS
+- Caching
+- CNI
+- Kubeproxy
+
+🔄 𝐒𝐭𝐚𝐭𝐞𝐟𝐮𝐥 𝐀𝐩𝐩𝐥𝐢𝐜𝐚𝐭𝐢𝐨𝐧 𝐚𝐧𝐝 𝐃𝐚𝐭𝐚 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭
+- CSI
+- Stateful Application CSI
+- Persistent vol claim
+- Custom Resource Definition
+- CSI Driver
+- Volume snapshot
