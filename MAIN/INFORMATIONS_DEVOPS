@@ -1,0 +1,15 @@
+***Technical Stack****
+Tools--->
+• Programming Language: Python
+• Infrastructure as Code (IaC) – Terraform, CloudFormation, Ansible
+• Containerization- Docker
+• Container Orchestration – Kubernetes (K8s), AWS ECS
+• Cloud Platform- AWS
+• Configuration Management-Ansible
+• Monitoring and logging -Prometheus, Cloud watch
+• Data Visualization- Grafana
+• CI/CD Tools- Jenkins
+• Security: IAM
+• Source Code Management- Git, Github 
+• Network- VPC,Subnet, Load Balancer
+• Web Servers: Apache, Nginx
