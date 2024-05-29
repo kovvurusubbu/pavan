@@ -48,6 +48,12 @@
  1307  which k9s
  1308  history
  
+i need to move  another project
+
+kubectl config set-context QA-context --cluster=test-staging-cluster --namespace=prod --user=QA            (i have  a  user  add_name --user-QA) 
+kubectl config use-context QA-context
+
+
  
  
  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
