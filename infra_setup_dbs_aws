@@ -1,0 +1,114 @@
+Creating a Cassandra Database on AWS
+--------------------------------------
+1. Set Up IAM Permissions
+Go to the AWS IAM service.
+
+2.Create a User (if needed):
+
+  Navigate to Users and click Add user.
+  Enter a user name (e.g., cassandra_user), select Programmatic access, and AWS Management Console access if required.
+  Attach existing policies or create a new policy for Cassandra and S3 access.
+
+Policy Example:
+--------------
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeInstances",
+                "ec2:StartInstances",
+                "ec2:StopInstances"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::cassandra",
+                "arn:aws:s3:::cassandra/*"
+            ]
+        }
+    ]
+}
+
+3. Create an S3 Bucket
+------------------------
+Go to the S3 service.
+  Click Create bucket.
+  Name the bucket cassandra.
+  Configure options as needed and click Create bucket.
+4  . Create a VPC and Subnets
+    Create a VPC:
+    Go to the VPC service.
+    Click Create VPC.
+    Enter an IPv4 CIDR block (e.g., 10.0.0.0/16) and create the VPC.
+    Create Subnets:
+
+    In the VPC Dashboard, click Subnets and then Create subnet.
+    Enter details:
+    IPv4 CIDR block: Define CIDR blocks for subnets (e.g., 10.0.1.0/24 and 10.0.2.0/24).
+    Create the subnets.
+5. Create and Attach an Internet Gateway
+      Create an Internet Gateway:
+      Go to the VPC Dashboard and click Internet Gateways.
+      Click Create internet gateway, enter a name (e.g., MyInternetGateway), and create the gateway.
+      Attach the Internet Gateway to Your VPC:
+
+Select the gateway you created.
+Click Actions > Attach to VPC.
+Choose your VPC and click Attach Internet Gateway.
+
+6. Create NAT Gateways
+    Go to the VPC Dashboard and click NAT Gateways.
+    Click Create NAT gateway and configure it as needed.
+    Allocate an Elastic IP address and associate it with the NAT Gateway.
+7. Configure Route Tables
+    Go to the VPC Dashboard and click Route Tables.
+    Click Create route table.
+
+Enter a name (e.g., MyRouteTable).
+    Select your VPC.
+    Click Create route table.
+    Add Routes:
+
+Select the route table you created.
+    Click Actions > Edit routes.
+    Click Add route:
+    Destination: Enter 0.0.0.0/0 for internet access.
+    Target: Select the Internet Gateway you created.
+    Click Save routes.
+8. Configure Network ACLs (Optional)
+    Go to the VPC Dashboard and click Network ACLs.
+
+    Click Create network ACL.
+
+    Enter a name (e.g., MyNetworkACL).
+    Select your VPC.
+    Click Create network ACL.
+    Configure Inbound and Outbound Rules:
+
+Select the network ACL you created.
+Click Inbound rules or Outbound rules and then Edit inbound rules or Edit outbound rules.
+Add rules based on your requirements (e.g., allow traffic on Cassandra port 9092).
+Click Save changes.
+
+=================================================================================================
+Summary::-
+    VPC:               Creates a private network within AWS.
+    Subnets:           Divides the VPC into smaller segments for different uses.
+    Internet Gateway:  Allows instances in your VPC to access the internet.
+    Route Tables:      Manages routing of traffic within the VPC.
+    Security Groups:  Controls inbound and outbound traffic to your instances.
+    Network ACLs:     Provides an additional layer of security at the subnet level.
+====================================================================================================
+
+
+
+
