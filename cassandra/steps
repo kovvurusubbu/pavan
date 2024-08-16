@@ -1,0 +1,115 @@
+Step 1: Create a VPC
+Open the VPC Dashboard:
+
+Go to the AWS Management Console.
+Open the VPC Dashboard from the Services menu.
+Create a VPC:
+
+Click on "Create VPC".
+Select "VPC only".
+Give your VPC a name tag (e.g., CassandraVPC).
+Set the IPv4 CIDR block (e.g., 10.0.0.0/16).
+Choose "No IPv6 CIDR block".
+Set the Tenancy to "Default".
+Click on "Create VPC".
+Step 2: Create Subnets
+Create Subnets:
+In the VPC Dashboard, select "Subnets".
+Click on "Create subnet".
+Select your VPC (e.g., CassandraVPC).
+Choose an Availability Zone (e.g., us-east-1a).
+Give your subnet a name tag (e.g., CassandraSubnet).
+Set the IPv4 CIDR block (e.g., 10.0.1.0/24).
+Click on "Create subnet".
+Step 3: Create an Internet Gateway
+Create Internet Gateway:
+
+In the VPC Dashboard, select "Internet Gateways".
+Click on "Create internet gateway".
+Give it a name tag (e.g., CassandraIGW).
+Click on "Create internet gateway".
+Attach Internet Gateway:
+
+Select the newly created Internet Gateway.
+Click on "Actions" and select "Attach to VPC".
+Select your VPC (e.g., CassandraVPC).
+Click on "Attach internet gateway".
+Step 4: Create a Route Table
+Create Route Table:
+
+In the VPC Dashboard, select "Route Tables".
+Click on "Create route table".
+Give it a name tag (e.g., CassandraRouteTable).
+Select your VPC (e.g., CassandraVPC).
+Click on "Create route table".
+Add Route to Route Table:
+
+Select the newly created Route Table.
+Click on "Routes" and then "Edit routes".
+Click on "Add route".
+Set the Destination to 0.0.0.0/0 and the Target to your Internet Gateway (e.g., CassandraIGW).
+Click on "Save changes".
+Associate Route Table with Subnet:
+
+Select the Route Table.
+Click on "Subnet associations" and then "Edit subnet associations".
+Select your subnet (e.g., CassandraSubnet).
+Click on "Save".
+Step 5: Create a Security Group
+Create Security Group:
+
+In the VPC Dashboard, select "Security Groups".
+Click on "Create security group".
+Give it a name (e.g., CassandraSG).
+Set the VPC (e.g., CassandraVPC).
+Add a description (e.g., Security group for Cassandra).
+Click on "Create security group".
+Add Inbound Rules:
+
+Select the newly created Security Group.
+Click on "Inbound rules" and then "Edit inbound rules".
+Add the following rules:
+Type: Custom TCP Rule, Protocol: TCP, Port Range: 9042, Source: Custom, 0.0.0.0/0 (for Cassandra client connections)
+Type: SSH, Protocol: TCP, Port Range: 22, Source: My IP (or a specific IP range for SSH access)
+Click on "Save rules".
+Step 6: Create an S3 Bucket (Optional)
+Create S3 Bucket:
+Go to the S3 Dashboard.
+Click on "Create bucket".
+Give your bucket a name (e.g., cassandra-backup-bucket).
+Choose a region.
+Click on "Create bucket".
+Step 7: Launch an EC2 Instance with Bitnami Cassandra Image
+Launch Instance:
+
+Go to the EC2 Dashboard.
+Click on "Launch Instance".
+Choose the Bitnami Cassandra image from the AWS Marketplace.
+Select an instance type (e.g., t2.micro for testing, m5.large for production).
+Configure Instance:
+
+Configure instance details:
+Network: Select your VPC (e.g., CassandraVPC).
+Subnet: Select your subnet (e.g., CassandraSubnet).
+Auto-assign Public IP: Enable.
+Add Storage as needed.
+Add Tags (optional).
+Configure Security Group:
+
+Select the existing security group (e.g., CassandraSG).
+Review and Launch:
+
+Review your instance configuration.
+Click on "Launch".
+Select an existing key pair or create a new one for SSH access.
+Click on "Launch Instances".
+Step 8: Connect to Your Instance
+Connect via SSH:
+From the EC2 Dashboard, select your instance.
+Click on "Connect".
+Follow the instructions to connect via SSH using your key pair.
+Step 9: Verify Cassandra Installation
+        Access Cassandra:
+        sudo systemctl status bitnami
+You can also use cqlsh to connect to Cassandra:
+        cqlsh
