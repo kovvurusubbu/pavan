@@ -1,0 +1,48 @@
+Create a Service Account for the developer in the staging namespace.
+
+kubectl create serviceaccount developer-sa -n staging
+
+
+Create a Role that grants read-only access to pods, as defined earlier:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: staging
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+
+
+Create a RoleBinding to bind the role to the service account:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-only-pod-binding
+  namespace: staging
+subjects:
+- kind: ServiceAccount
+  name: developer-sa
+  namespace: staging
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+
+
+Get the Service Account Token: You can retrieve the token for the developer's service account by running:
+kubectl get serviceaccount developer-sa -n staging
+kubectl -n staging get secret $(kubectl -n staging get sa developer-sa -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode
+
+
+
+After Retrieving the Token:
+The developer can then configure their kubeconfig file with the token as follows:
+
+
+kubectl config set-credentials developer-sa --token=<service_account_token>
+kubectl config set-context developer-context --cluster=<cluster_name> --namespace=staging --user=developer-sa
+kubectl config use-context developer-context
+
+
