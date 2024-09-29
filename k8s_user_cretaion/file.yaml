@@ -7,18 +7,19 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   namespace: staging
-  name: pod-reader
+  name: pod-log-reader
 rules:
 - apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get", "list", "watch"]
+  resources: ["pods/log"]
+  verbs: ["get", "watch", "list"]
+
 
 
 Create a RoleBinding to bind the role to the service account:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: read-only-pod-binding
+  name: read-pod-logs
   namespace: staging
 subjects:
 - kind: ServiceAccount
@@ -26,8 +27,9 @@ subjects:
   namespace: staging
 roleRef:
   kind: Role
-  name: pod-reader
+  name: pod-log-reader
   apiGroup: rbac.authorization.k8s.io
+
 
 
 Get the Service Account Token: You can retrieve the token for the developer's service account by running:
