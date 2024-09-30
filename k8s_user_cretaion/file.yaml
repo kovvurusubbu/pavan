@@ -65,3 +65,117 @@ kubectl get pods -n staging
 
 
 
+
+***********************************************************************************************************************************************8
+
+i created new user again:-
+--------------------------------------------------------
+--------------------------------------------------------
+// create  the  service a/c
+kubectl create serviceaccount dev-sa -n staging
+-------------------------------------------------
+-------------------------------------------------
+//create the Role Permissions,Bind the Role
+--> Sample read-only-pod-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: staging
+  name: read-only-pod-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-only-pod-role-binding
+  namespace: staging
+subjects:
+- kind: ServiceAccount
+  name: dev-sa
+  namespace: staging
+roleRef:
+  kind: Role
+  name: read-only-pod-role
+  apiGroup: rbac.authorization.k8s.io
+
+-------------------------------------------------
+-------------------------------------------------  
+// create  the  service a/c
+kubectl create serviceaccount dev-sa -n staging
+-------------------------------------------------
+-------------------------------------------------
+//create the Role Permissions,Bind the Role
+--> Sample read-only-pod-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: staging
+  name: read-only-pod-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-only-pod-role-binding
+  namespace: staging
+subjects:
+- kind: ServiceAccount
+  name: dev-sa
+  namespace: staging
+roleRef:
+  kind: Role
+  name: read-only-pod-role
+  apiGroup: rbac.authorization.k8s.io
+
+-------------------------------------------------
+-------------------------------------------------  
+// create  the  service a/c
+kubectl create serviceaccount dev-sa -n staging
+-------------------------------------------------
+-------------------------------------------------
+//create the Role Permissions,Bind the Role
+--> Sample read-only-pod-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: staging
+  name: read-only-pod-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-only-pod-role-binding
+  namespace: staging
+subjects:
+- kind: ServiceAccount
+  name: dev-sa
+  namespace: staging
+roleRef:
+  kind: Role
+  name: read-only-pod-role
+  apiGroup: rbac.authorization.k8s.io
+
+-------------------------------------------------
+-------------------------------------------------  
+kubectl get serviceaccount -n staging
+
+kubectl get serviceaccount dev-sa -n staging
+
+//Create a Token Using the TokenRequest AP:-
+kubectl create token dev-sa -n staging
+
+kubectl config set-credentials dev-sa --token=<generated_token>  // here past the token
+kubectl config set-context developer-context --cluster=<cluster_name> --namespace=staging --user=dev-sa
+kubectl config use-context dev-context
+
+=========================================================
