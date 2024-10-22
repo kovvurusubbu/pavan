@@ -1,0 +1,21 @@
+mkdir -p /opt/cassandra/data
+        chmod 777 /opt/cassandra/data
+        docker network create cassandra_network
+        docker pull bitnami/cassandra:4.1.3
+
+
+
+docker run --name cassandra-node1 \
+        -dit --restart unless-stopped \
+        --net=cassandra_network \
+        -v /opt/cassandra/data:/bitnami \
+        -p 7000:7000 \
+        -p 7001:7001 \
+        -p 9042:9042 \
+        -p 9160:9160 \
+        -p 7199:7199 \
+        -e CASSANDRA_CLUSTER_NAME=cassandra-cluster \
+        -e CASSANDRA_SEEDS=cassandra-node1 \
+        -e CASSANDRA_PASSWORD_SEEDER=yes \
+        -e CASSANDRA_PASSWORD=mypassword \
+        bitnami/cassandra:4.1.3
