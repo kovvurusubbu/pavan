@@ -176,6 +176,6 @@ kubectl create token dev-sa -n staging
 
 kubectl config set-credentials dev-sa --token=<generated_token>  // here past the token
 kubectl config set-context developer-context --cluster=<cluster_name> --namespace=staging --user=dev-sa
-kubectl config use-context dev-context
+kubectl config use-context developer-context
 
 =========================================================
