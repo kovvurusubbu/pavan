@@ -1,0 +1,21 @@
+steps:-
+
+sysctl -w vm.max_map_count=262144
+        mkdir /opt/esdatadir
+        chmod 0777 /opt/esdatadir
+        chgrp 1000 /opt/esdatadir
+
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+        docker network create es_network
+
+
+docker run --name elastic-search \
+        -dit --restart unless-stopped \
+        --net=es_network \
+        -p 9200:9200 \
+        -p 9300:9300 \
+        -v /opt/esdatadir:/usr/share/elasticsearch/data \
+        -e "bootstrap.memory_lock=true" --ulimit memlock=-1:-1 --ulimit nofile=65535:65535 \
+        -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
+        -e "discovery.type=single-node" \
+        docker.elastic.co/elasticsearch/elasticsearch:7.5.2
