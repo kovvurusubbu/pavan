@@ -1,0 +1,140 @@
+sonarqube_setup:- << https://hub.docker.com/r/bitnami/sonarqube/tags >>
+-----------------
+Step-by-Step Instructions
+
+1. Install and Start Docker
+   sudo apt-get update
+2 Install dependencies for Docker:
+  sudo apt-get install -y ca-certificates curl
+3 Set up Docker’s official GPG key:
+  sudo install -m 0755 -d /etc/apt/keyrings
+  sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+  sudo chmod a+r /etc/apt/keyrings/docker.asc
+4 Add Docker’s repository:
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+5 Install Docker Engine and related packages:
+  sudo apt-get update
+  sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+6 Enable and start Docker service:
+  sudo systemctl enable docker
+  sudo systemctl start docker
+  docker --version
+  docker info
+
+##____> install nginx-server
+Install and Configure Nginx 
+  sudo apt install -y nginx
+# Enable and start Nginx:
+  sudo systemctl enable nginx
+  sudo systemctl start nginx
+# Verify Nginx status:
+  sudo systemctl status nginx
+#  Edit Nginx configuration as needed:
+   sudo vi /etc/nginx/conf.d/qc.conf
+---
+server {
+    server_name domain_name;
+    client_max_body_size 100M;
+    access_log /var/log/nginx/qc.log;
+    location / {
+        proxy_pass http://localhost:9000;
+        proxy_read_timeout 20d;
+   }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/domain_name/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/domain_name/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+server {
+    if ($host = domain_name) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+    server_name domain_name;
+    listen 80 ;
+    return 404; # managed by Ce    
+---
+
+# Restart Nginx to apply changes:
+  sudo systemctl restart nginx
+  
+## Set Up SonarQube with Docker Compose
+   Create a directory for SonarQube:
+    sudo mkdir -p /opt/sonarqube/extensions/plugins
+         cd /opt/sonarqube
+
+## Download the SonarQube Community Branch Plugin (if needed):
+   wget -P /opt/sonarqube/extensions/plugins https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/download/1.19.0/sonarqube-community-branch-plugin-1.19.0.jar
+   
+## Create and edit the docker-compose.yml file:
+--> cd /opt/sonarqube/
+   touch docker-compose.yml   
+sudo vi docker-compose.yml
+--- 
+  version: '2'
+  services:
+  postgresql:
+    image: docker.io/bitnami/postgresql:16
+    volumes:
+      - /opt/sonarqube/postgresql_data:/bitnami/postgresql
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      ALLOW_EMPTY_PASSWORD: "no"
+      POSTGRESQL_USERNAME: sonar_pg_user
+      POSTGRESQL_PASSWORD: "----"
+      POSTGRESQL_DATABASE: bitnami_sonarqube
+
+  sonarqube:
+    image: docker.io/bitnami/sonarqube:10
+    ports:
+      - "9000:9000"
+    volumes:
+      - /opt/sonarqube:/bitnami/sonarqube
+    depends_on:
+      - postgresql
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      ALLOW_EMPTY_PASSWORD: "no"
+      SONARQUBE_DATABASE_HOST: postgresql
+      SONARQUBE_DATABASE_PORT_NUMBER: 5432
+      SONARQUBE_DATABASE_USER: sonar_pg_user
+      SONARQUBE_DATABASE_PASSWORD: Dev0ps@2024
+      SONARQUBE_DATABASE_NAME: bitnami_sonarqube
+      SONARQUBE_USERNAME: gitlabsonar
+      SONARQUBE_PASSWORD: "----"
+      SONARQUBE_WEB_JAVA_ADD_OPTS: "-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=web"
+      SONARQUBE_CE_JAVA_ADD_OPTS: "-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=ce"
+
+---
+## Start SonarQube: 
+   sudo docker-compose up -d
+## Verify SonarQube is running:
+  docker ps
+
+## Configure System Settings for SonarQube
+   Set system limits for SonarQube
+   sudo sysctl -w vm.max_map_count=262144
+## install Certbot and Obtain SSL Certificate
+  Install Certbot and Nginx plugin:
+
+ sudo apt-get install -y certbot python3-certbot-nginx
+-->  Obtain an SSL certificate for domain_name
+ sudo certbot --nginx -d domain_name
+ 
+## Verify SSL certificate renewal by checking Certbot’s configuration:
+
+sudo crontab -e
+Add the following line to automate renewal:
+0 0 * * * /usr/bin/certbot renew --quiet
+
+# Verify SSL certificate renewal status:
+ sudo certbot renew --dry-run
+ 
+#  Final Verification and Cleanup
+   Check Docker containers:
+   docker ps
+   Check Nginx status and configuration:
+   sudo systemctl status nginx
+     
+
+        
