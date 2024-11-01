@@ -1,0 +1,39 @@
+Serverless Deployment:
+------------------------
+Github url: https://github.com/ansarshaik965/AWS-SERVERLESS-DEPLOYMENT/blob/main/getStudents.py
+youtube: https://www.youtube.com/watch?v=pK52mfm69i0&t=1028s
+
+USER -------> API ----------------GET       dynamoDB
+                                  POST
+
+
+
+
+### Pre Requisites:---
+
+1 aws a/c
+2 IAM role to  lambda : access dynamoDB
+CREATE role  and create policy
+ 
+role full permissions   AWSLambda_FullAccess
+policy create :--
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "dynamodb:PutItem",
+            "Resource": "arn:aws:dynamodb:ap-south-1:559050247938:table/studentData"
+        }
+    ]
+} 
+                                  
+
+PART 1
+
+1 we will  creating dynamodb table and  lambda function
+
+
+PART 2 
+Creating API to  trigger lanbda fucntion s3 static web  hosting
+
