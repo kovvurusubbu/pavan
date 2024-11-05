@@ -1,0 +1,14 @@
+sudo yum update -y
+        sudo yum install docker -y
+        sudo systemctl enable docker
+        sudo systemctl restart docker
+
+docker pull mongo:6.0.3
+        docker run -d \
+        --name mongodb \
+        -p 27017:27017 \
+        -e MONGO_INITDB_ROOT_USERNAME=admin \
+        -e MONGO_INITDB_ROOT_PASSWORD=admin \
+        -v /opt/mongodb/data:/data/db \
+        --restart unless-stopped \
+        mongo:6.0.3
