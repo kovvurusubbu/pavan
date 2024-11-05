@@ -12,3 +12,10 @@ docker pull mongo:6.0.3
         -v /opt/mongodb/data:/data/db \
         --restart unless-stopped \
         mongo:6.0.3
+
+
+
+
+sudo docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container_id>
+
+above  command show the  container IP
