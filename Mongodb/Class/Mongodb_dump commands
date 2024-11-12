@@ -1,0 +1,12 @@
+1 st install mongodump
+## The command creates a backup of the TESTING-DB MongoDB database from a remote host, authenticating with the specified credentials and saving the dump to /home/subbu/db-dump.
+mongodump --host IP -u TEST -p TEST --port 55017 --authenticationDatabase TESTING-DB --db TESTING-DB -o "/home/subbu/db-dump"
+
+## The command restores the MongoDB database from the /home/subbu/db-dump backup to the specified database (DATATBASENAME) on a remote host, overwriting existing data with --drop and using the provided credentials.
+mongorestore --host IP --port 55017 --drop -d DATATBASENAME -u alpha -p vPz9xNAF1 "/home/subbu/db-dump"
+
+## The command imports data from the ts1.json file into the  collection in the DB-product MongoDB database on the specified host, 
+using the alpha and the --legacy flag to support older BSON formats.
+mongoimport --host=IP --port=27017 --username=////// --db=databasename --collection=spefic_collection_name  --legacy --file=ts1.json
+
+
