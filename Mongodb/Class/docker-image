@@ -3,19 +3,36 @@ sudo yum update -y
         sudo systemctl enable docker
         sudo systemctl restart docker
 
-docker pull mongo:6.0.3
-        docker run -d \
-        --name mongodb \
-        -p 27017:27017 \
-        -e MONGO_INITDB_ROOT_USERNAME=admin \
-        -e MONGO_INITDB_ROOT_PASSWORD=admin \
-        -v /opt/mongodb/data:/data/db \
-        --restart unless-stopped \
-        mongo:6.0.3
-
-
-
+# docker pull mongo:6.0.3
+#        docker run -d \
+         --name mongodb \
+         -p 27017:27017 \
+         -e MONGO_INITDB_ROOT_USERNAME=admin \
+         -e MONGO_INITDB_ROOT_PASSWORD=admin \
+         -v /opt/mongodb/data:/data/db \
+         --restart unless-stopped \
+         mongo:6.0.3
 
 sudo docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container_id>
+## above  command show the  container IP
 
-above  command show the  container IP
+
+if you  need  create  new user 
+1st connect  admin db 
+
+after create db_name (EX:testing-db)
+after you can openshall
+below query run..!
+---
+db.createUser(
+    {
+      user: 'test',
+      pwd: 'test',
+      roles: [ {role: 'dbAdmin', db:'testing-db' } ],
+    }
+);
+---
+after you can run below command..
+db.updateUser("test", { roles: [ { role: "readWrite", db: "testing-db" } ] })
+
+after you  can connect to testing-db
