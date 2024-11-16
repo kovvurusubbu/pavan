@@ -1,3 +1,5 @@
+https://medium.com/techlogs/grafana-loki-with-aws-s3-backend-through-irsa-in-aws-kubernetes-cluster-93577dc482a
+
 loki-values.yml:
 ----------------
 loki:
