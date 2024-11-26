@@ -1,0 +1,116 @@
+metabase_
+
+TASK:---<
+https://www.metabase.com/start/oss/
+
+1 create  the 1 vm "linux are ubuntu"
+after--
+sudo apt update -y
+sudo apt install openjdk-11-jdk
+java -version
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+source ~/.bashrc
+
+### install docker
+sudo apt install docker.io
+sudo docker network create metabase-network
+sudo docker pull metabase/metabase-enterprise:latest
+sudo docker run -d -p 3000:3000 --name metabase --network metabase-network metabase/metabase-enterprise
+
+### install nginx-server
+sudo apt update
+sudo apt install nginx
+sudo apt install certbot python3-certbot-nginx
+
+http://23.102.123.321:3000  you  can check  the in web
+
+Now i need to add domain
+-------------------------
+**************************
+
+Create a new Nginx server block for the domain metabase.subbu.io
+##Navigate to Nginx’s configuration directory:
+= cd /etc/nginx/sites-available/
+##Create a new configuration file, e.g., metabase.subbu.io
+= sudo nano metabase.subbu.io
+---  
+server {
+    server_name metabase.subbu.io;
+    listen 80;
+    access_log /dev/stdout;
+    client_max_body_size 100M;
+    return 301 https://$host$request_uri;
+}
+server {
+    server_name metabase.subbu.io;
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    access_log /dev/stdout;
+    ssl_certificate /etc/nginx/conf.d/certs/subbu.io.crt;
+    ssl_certificate_key /etc/nginx/conf.d/certs/subbu.io.key;
+    ssl on;
+    set_real_ip_from 10.0.1.3/112;
+    set_real_ip_from 19.124.3.2/123;
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+    auth_basic "Private Property";
+    auth_basic_user_file /etc/nginx/conf/passwd/.subbu_auth;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+    if ($http_origin = '') {
+        set $http_origin "*";
+    }
+    add_header Access-Control-Allow-Origin $http_origin;
+    add_header Access-Control-Allow-Methods "GET, POST, PATCH, OPTIONS, PUT, DELETE, HEAD";
+    add_header Access-Control-Allow-Credentials "true";
+    add_header Access-Control-Allow-Headers "Origin, Content-Type, Accept, Authorization";
+    client_max_body_size 100M;
+    client_header_buffer_size 64k;
+    large_client_header_buffers 4 16k;
+
+    location / {
+        proxy_pass http://23.102.123.321:3000;
+    }
+ ---
+
+## Verify the Existence of the SSL Certificate and Key:
+ls -l /etc/nginx/conf.d/certs/
+## Generate a New SSL Key and Certificate (if necessary)
+#sudo openssl req -x509 -newkey rsa:4096 -keyout /etc/nginx/conf.d/certs/subbu.io.key -out /etc/nginx/conf.d/certs/subbu.io.crt -days 365 -nodes -subj "/C=US/ST=California/L=Los Angeles/O=subbu/OU=IT Department/CN=metabase.subbu.io"
+
+use below--|
+Steps to Convert the PEM Key to a .key File Format:
+
+## 
+Convert the PEM Key to .key Format:
+You can convert the PEM file to the .key format using OpenSSL:
+
+sudo openssl rsa -in /etc/nginx/conf.d/certs/subbu.key.pem -out /etc/nginx/conf.d/certs/subbu.io.key
+
+# This will generate a .key file (subbu.io.key) that Nginx can use. Ensure the permissions for the key file are secure after the conversion:
+sudo chmod 600 /etc/nginx/conf.d/certs/subbu.io.key
+
+comment : please check properly nginx configurations (Update Nginx Configuration):-
+If the key file now exists as subbu.io.key, ensure that your Nginx configuration points to the correct files:
+dont use ..check correct are not
+ssl_certificate /etc/nginx/conf.d/certs/subbu.io.crt;
+ssl_certificate_key /etc/nginx/conf.d/certs/subbu.io.key;
+  
+
+Test Nginx Configuration:
+sudo nginx -t
+Reload Nginx:
+sudo systemctl reload nginx
+
+
+
+i'm currenly  using  cloudflare im  adding new sub domain name  (main domain is --> subbu.io <--)
+im create sub domain so  
+
+i'm adding in cloudflare
+the  domain is called 
+ 
+
+metabase.subbu.io  --- IP : 23.102.123.321
