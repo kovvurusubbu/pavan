@@ -1,0 +1,57 @@
+sudo apt-get update
+sudo apt-get install openssl
+sudo apt install nginx
+
+// Generate a Private Key: Use the following command to create a 2048-bit RSA private
+* The main  domain is  subbu.or
+1 cd /etc/nginx/conf.d/ssl/
+2 touch subbu.crt subbu.key
+
+3 sudo openssl genrsa -out subbu.or.key 2048
+4 sudo openssl req -new -x509 -key subbu.or.key -out subbu.or.crt -days 365
+
+try nginx-server is working are not 
+
+nginx -t
+
+
+=================================================================================================================================
+this is im setuped in local-server
+
+  105  mkdir certs
+  106  sudo mkdir certs
+  107  cd certs/
+  108  sudo vim subbu.io.crt
+  109  sudo vim subbu.key.pem
+  110  ls -ll
+  111  sudo chmod 777 subbu.io.crt subbu.key.pem
+  112  ls -ll
+  113  pwd
+  114  cd ..
+  115  cd sites-available/
+  116  rm -rf metabase.subbu.io.conf 
+  117  sudo rm -rf metaba.subbu.io.conf 
+  118  sudo vim metase.subbu.io.conf
+  119  ls -l
+  120  sudo chmod 777 metaba.subbu.io.conf
+  121  ls -ll
+  122  sudo ln -s /etc/nginx/sites-available/metabe.subbu.io.conf /etc/nginx/sites-enabled/
+  123  ls -l /etc/nginx/sites-enabled/
+  124  sudo nginx -t
+  125  sudo systemctl reload nginx
+  126  grep -r "metabe.subbu.io" /etc/nginx/
+  127  sudo rm /etc/nginx/sites-enabled/metabe.subbu.io.conf
+  128  sudo ln -s /etc/nginx/sites-available/metabase.subbu.io.conf /etc/nginx/sites-enabled/
+  129  sudo nginx -t
+  130  sudo grep -r "metase.subbu.io" /etc/nginx/
+  131  sudo vim /etc/nginx/nginx.conf
+  132  cd
+  133  sudo ln -s /etc/nginx/sites-available/mebase.subbu.io.conf /etc/nginx/sites-enabled/
+  134  sudo nginx -t
+  135  ls -ll
+  136  cd /etc/nginx/
+  137  ls -ll
+  138  cd ..
+  139  ls -ll
+  140  history
+  after restart nginx-server
