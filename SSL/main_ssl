@@ -1,0 +1,15 @@
+SSL_CRETFICATIONS
+------------------
+sudo apt install  nginx -y
+
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d metabase.subbu.io
+openssl req -newkey rsa:2048 -nodes -keyout subbu.io.key -x509 -days 365 -out subbu.io.crt
+
+
+
+
+
+sudo ln -s /etc/nginx/sites-available/metabase.upsure.io.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/metabase.upsure.io.conf /etc/nginx/sites-enabled/
+sudo nginx -t
