@@ -1,0 +1,46 @@
+touch mongodump.sh
+
+#!/bin/bash
+
+set -x
+
+HOST="323.43.24.33"
+PORT="503317"
+USER="edsfdghj"
+PASSWORD="fdggjhkhjl"
+AUTH_DB="ggggggg"
+DB="ggggggggg"
+OUTPUT_DIR="/home/subbu/mongo/backup"
+
+# Date calculation (last 3 months)
+END_DATE=$(date +%Y-%m-%dT23:59:59Z) # ISO 8601 format
+START_DATE=$(date -d "-3 months" +%Y-%m-%dT00:00:00Z)
+
+# List of collections to back up
+collections="application_from_dynamic
+content_dynamic
+basicform_dynamic
+dynamic
+products
+_req_json
+req_mapper
+res_json
+_res_mapper
+_valuelists
+channel_ma"
+
+# Loop through collections and back them up with a query
+for collection in $collections; do
+  echo "Backing up last 3 months of data for collection: $collection"
+
+  mongodump --host $HOST \
+            --port $PORT \
+            -u $USER \
+            -p "$PASSWORD" \
+            --authenticationDatabase $AUTH_DB \
+            --db $DB \
+            --collection $collection \
+            --query "{ \"date_field\": { \"\$gte\": { \"\$date\": \"$START_DATE\" }, \"\$lte\": { \"\$date\": \"$END_DATE\" } }}" \
+            --out "$OUTPUT_DIR"
+done
+
