@@ -1,26 +1,25 @@
 #!/bin/bash
 
-HOST="35.200.208.73"
+HOST="IP"
 PORT="55017"
-USER="inbox_qa_team"
-PASSWORD="Z3HCpXIGrf"
-AUTH_DB="staging-product-catalog"
-DB="staging-product-catalog"
-OUTPUT_DIR="/home/upsure/mongo/backup"
+USER="_team"
+PASSWORD="pXIGrf"
+AUTH_DB="stERTYcatalog"
+DB="stERTYcatalog"
+OUTPUT_DIR="/home/SUBBU/mongo/backup"
 
 # List of collections to back up
 collections=(
-  "channel_products_application_from_dynamic"
-  "channel_products_application_form_content_dynamic"
-  "channel_partner_basicform_dynamic"
-  "channel_partner_basicform_content_dynamic"
-  "channel_products"
-  "cp_product_req_json"
-  "cp_json_req_mapper"
-  "cp_product_res_json"
-  "cp_json_res_mapper"
-  "channel_partners_valuelists"
-  "channel_partners"
+  "_application_from_dynamic"
+  "_form_content_dynamic"
+  "channel__basicform_"
+  "products"
+  "req_json"
+  "_req_mapper"
+  "cp_product"
+  "cp_json_"
+  "channuelists"
+  "rtners"
 )
 
 # Loop through collections and back them up
