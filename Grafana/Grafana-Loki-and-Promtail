@@ -1,0 +1,22 @@
+Installation Guide
+  --> Add Grafana's Helm Chart Repository:
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
+# Search for Available Versions (Optional):
+helm search repo grafana/loki-stack
+
+# Retrieve Default Values for Customization:
+helm show values grafana/loki-stack > values.yaml                 | in this values files you can change  the grafana   ture  option
+
+# Create the Monitoring Namespace
+ kubectl create namespace monitoring
+
+# Install Loki Stack:
+helm install -n monitoring --values values.yaml loki grafana/loki-stack
+
+
+kubectl get pods -n monitoring
+kubectl get svc -n monitoring
+kubectl port-forward svc/<grafana-service-name> 3000:80 -n monitoring
+
