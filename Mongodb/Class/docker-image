@@ -34,5 +34,12 @@ db.createUser({
 // Update the user to have `readWrite` permissions on `testing-db`
 db.updateUser("test", { roles: [ { role: "readWrite", db: "testing-db" } ] })
 
+
+if you  want read only below..
+
+db.grantRolesToUser("test", [
+    { role: "read", db: "test-db-stg" }
+])
+
 Connect to testing-db: After setting up the user, you can connect to testing-db using the credentials (test user with test password).
 
