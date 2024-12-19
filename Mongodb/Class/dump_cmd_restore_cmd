@@ -1,0 +1,3 @@
+mongodump --host 172.17.0.2 -u stg-product -p S@4wP#7q!Zz --port 27017 --authenticationDatabase testing-prorducufgt-ctg --db testing-prorducufgt-ctg -o "/home/mongo/backup"
+
+mongorestore --host 172.18.0.2  --port 27017 -d test-db-stg --authenticationDatabase admin  -u admin -p 'password' /home/ksr/db/backup/test-db/testing-db-stg
