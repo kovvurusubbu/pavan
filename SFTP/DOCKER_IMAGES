@@ -1,0 +1,20 @@
+pl follow the below commands:--
+
+sudo docker pull atmoz/sftp
+
+sudo docker run -d \
+  --name sftpU \
+  -p 2222:22 \
+  -v /host/sftp_data:/home \
+  atmoz/sftp \
+  ball:Subbu@786:::uploads \
+  subbu:Subbu@786:::uploads \
+  pavan:Subbu@786:::uploads
+
+
+
+Here user subbu  pwd: Subbu@786
+
+sudo docker inspect ea7cf7b78d6a | grep "IP"
+
+install the https://www.computernetworkingnotes.com/linux-tutorials/how-to-install-filezilla-ftp-client-in-ubuntu.html
