@@ -1,0 +1,22 @@
+Force DNS Update--
+---------------------
+##Open the /etc/systemd/resolved.conf file:-
+
+sudo nano /etc/systemd/resolved.conf
+
+[Resolve]
+DNS=8.8.8.8 8.8.4.4
+FallbackDNS=1.1.1.1 1.0.0.1
+
+
+## Restart systemd-resolved
+sudo systemctl restart systemd-resolved
+
+
+##Temporarily Override DNS
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+
+sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+nslookup google.com
