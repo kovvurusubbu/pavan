@@ -62,9 +62,10 @@ server {
    Create a directory for SonarQube:
     sudo mkdir -p /opt/sonarqube/extensions/plugins
          cd /opt/sonarqube
+         cd ~
 
 ## Download the SonarQube Community Branch Plugin (if needed):
-   wget -P /opt/sonarqube/extensions/plugins https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/download/1.19.0/sonarqube-community-branch-plugin-1.19.0.jar
+   sudo wget -P /opt/sonarqube/extensions/plugins https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/download/1.19.0/sonarqube-community-branch-plugin-1.19.0.jar
    
 ## Create and edit the docker-compose.yml file:
 --> cd /opt/sonarqube/
