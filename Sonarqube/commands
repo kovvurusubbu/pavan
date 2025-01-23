@@ -71,39 +71,39 @@ server {
    touch docker-compose.yml   
 sudo vi docker-compose.yml
 --- 
-  version: '2'
-  services:
+version: '2'
+services:
   postgresql:
     image: docker.io/bitnami/postgresql:16
     volumes:
-      - /opt/sonarqube/postgresql_data:/bitnami/postgresql
+      - '/opt/sonarqube/postgresql_data:/bitnami/postgresql'
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      ALLOW_EMPTY_PASSWORD: "no"
-      POSTGRESQL_USERNAME: sonar_pg_user
-      POSTGRESQL_PASSWORD: "----"
-      POSTGRESQL_DATABASE: bitnami_sonarqube
-
+      - ALLOW_EMPTY_PASSWORD=no
+      - POSTGRESQL_USERNAME=sonar_pg_user
+      - POSTGRESQL_PASSWORD=subbu@2024
+      - POSTGRESQL_DATABASE=bitnami_sonarqube
   sonarqube:
-    image: docker.io/bitnami/sonarqube:10
+    image: docker.io/bitnami/sonarqube:10.7.0
     ports:
-      - "9000:9000"
+      - '9000:9000'
     volumes:
-      - /opt/sonarqube:/bitnami/sonarqube
+      - '/opt/sonarqube:/bitnami/sonarqube'
+      - '/opt/logs:/opt/bitnami/sonarqube/logs'
     depends_on:
       - postgresql
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      ALLOW_EMPTY_PASSWORD: "no"
-      SONARQUBE_DATABASE_HOST: postgresql
-      SONARQUBE_DATABASE_PORT_NUMBER: 5432
-      SONARQUBE_DATABASE_USER: sonar_pg_user
-      SONARQUBE_DATABASE_PASSWORD: Dev0ps@2024
-      SONARQUBE_DATABASE_NAME: bitnami_sonarqube
-      SONARQUBE_USERNAME: gitlabsonar
-      SONARQUBE_PASSWORD: "----"
-      SONARQUBE_WEB_JAVA_ADD_OPTS: "-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=web"
-      SONARQUBE_CE_JAVA_ADD_OPTS: "-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=ce"
+      - ALLOW_EMPTY_PASSWORD=no
+      - SONARQUBE_DATABASE_HOST=postgresql
+      - SONARQUBE_DATABASE_PORT_NUMBER=5432
+      - SONARQUBE_DATABASE_USER=sonar_pg_user
+      - SONARQUBE_DATABASE_PASSWORD=subbu@2024
+      - SONARQUBE_DATABASE_NAME=bitnami_sonarqube
+      - SONARQUBE_USERNAME=subbusonar   // here is the different user and pwd this is login credentials 
+      - SONARQUBE_PASSWORD=subbu@2024
+      - SONARQUBE_WEB_JAVA_ADD_OPTS=-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=web
+      - SONARQUBE_CE_JAVA_ADD_OPTS=-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=ce 
 
 ---
 ## Start SonarQube: 
