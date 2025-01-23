@@ -1,0 +1,33 @@
+version: '2'
+services:
+  postgresql:
+    image: docker.io/bitnami/postgresql:16
+    volumes:
+      - /opt/sonarqube/postgresql_data:/bitnami/postgresql
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      ALLOW_EMPTY_PASSWORD: "no"
+      POSTGRESQL_USERNAME: sonar_pg_user
+      POSTGRESQL_PASSWORD: "0fNT0*MB0Di1"
+      POSTGRESQL_DATABASE: bitnami_sonarqube
+
+  sonarqube:
+    image: docker.io/bitnami/sonarqube:10
+    ports:
+      - "9000:9000"
+    volumes:
+      - /opt/sonarqube:/bitnami/sonarqube
+    depends_on:
+      - postgresql
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      ALLOW_EMPTY_PASSWORD: "no"
+      SONARQUBE_DATABASE_HOST: postgresql
+      SONARQUBE_DATABASE_PORT_NUMBER: 5432
+      SONARQUBE_DATABASE_USER: sonar_pg_user
+      SONARQUBE_DATABASE_PASSWORD: "0fNT0*MB0Di1"
+      SONARQUBE_DATABASE_NAME: bitnami_sonarqube
+      SONARQUBE_USERNAME: "subbusonar"
+      SONARQUBE_PASSWORD: "subbu@78612345"
+      SONARQUBE_WEB_JAVA_ADD_OPTS: "-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=web"
+      SONARQUBE_CE_JAVA_ADD_OPTS: "-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=ce"
