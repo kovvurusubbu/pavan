@@ -1,0 +1,63 @@
+
+Pull Images Before Running
+
+docker pull postgres:16
+docker pull bitnami/sonarqube:10
+
+### Command to Run SonarQube with PostgreSQL:-
+
+# Start PostgreSQL
+docker run -d \
+  --name sonarqube-postgresql \
+  -e POSTGRES_USER=sonar_pg_user \
+  -e POSTGRES_PASSWORD=0fNT0*B0Di1 \
+  -e POSTGRES_DB=bitnami_sonarqube \
+  -v /opt/sonarqube/postgresql_data:/var/lib/postgresql/data \
+  postgres:16
+
+# Start SonarQube
+docker run -d \
+  --name sonarqube \
+  --link sonarqube-postgresql:postgresql \
+  -e SONARQUBE_JDBC_URL=jdbc:postgresql://postgresql:5432/bitnami_sonarqube \
+  -e SONARQUBE_JDBC_USERNAME=sonar_pg_user \
+  -e SONARQUBE_JDBC_PASSWORD=0fNT0*B0Di1 \
+  -e SONARQUBE_WEB_JAVA_ADD_OPTS="-javaagent:/opt/sonarqube/extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=web" \
+  -e SONARQUBE_CE_JAVA_ADD_OPTS="-javaagent:/opt/sonarqube/extensions/plugins/sonarqube-community-branch-plugin-1.19.0.jar=ce" \
+  -p 9000:9000 \
+  -v /opt/sonarqube:/opt/sonarqube \
+  bitnami/sonarqube:10
+
+
+Default:-
+Use the following credentials to log in:-
+Username: admin
+Password: admin (or subbusonar if you've customized it in the environment).
+
+
+=========================================================================================================================
+2 optional
+-----------
+
+docker run -d \
+  --name sonarqube-postgresql \
+  -e POSTGRES_USER=sonar_pg_user \
+  -e POSTGRES_PASSWORD=0fNT0*MB0Di1 \
+  -e POSTGRES_DB=bitnami_sonarqube \
+  -v /opt/sonarqube/postgresql_data:/var/lib/postgresql/data \
+  postgres:16
+
+
+docker run -d \
+  --name sonarqube \
+  --link sonarqube-postgresql:postgresql \
+  -e SONARQUBE_JDBC_URL=jdbc:postgresql://postgresql:5432/bitnami_sonarqube \
+  -e SONARQUBE_JDBC_USERNAME=sonar_pg_user \
+  -e SONARQUBE_JDBC_PASSWORD=0fNT0*MB0Di1 \
+  -e SONARQUBE_USERNAME=sonar \
+  -e SONARQUBE_PASSWORD=subbusonar@1234$ \
+  -p 9000:9000 \
+  -v /opt/sonarqube:/bitnami/sonarqube \
+  bitnami/sonarqube:10
+
+==========================================================
