@@ -1,0 +1,53 @@
+Your MongoDB db.createUser:--
+--------------------------------------
+db.createUser({
+  user: 'callcenter',
+  pwd: 'ftfSrfc6e45',
+  roles: [
+    {
+      role: 'dbAdmin',
+      db: 'callcenter'
+    }
+  ]
+});
+
+-----
+db.grantRolesToUser("callcenter", [
+    { role: "readWrite", db: "callcenter" }
+])
+
+================================================
+Query to List All Collections:-
+---
+db.getCollectionNames()
+
+## This query will return an array of all the collection names in the selected database.
+
+
+==================================================
+if you  want Additional Query (For Details):
+
+db.getCollectionNames().forEach(function(collection) {
+    print(collection + ": " + db[collection].count() + " documents");
+});
+
+
+================================================
+---------------------------------------
+Updated Script to Create Collections:
+---------------------------------------
+var collections = [
+    "_schema",
+    "app_version",
+    "best_sales",
+    "channel_partners",
+    "channel_partners_payment_logs",
+    "channel_partners_pdf_details",
+
+];
+ 
+collections.forEach(function(collectionName) {
+    db.createCollection(collectionName);
+});
+
+--------------
