@@ -1,0 +1,34 @@
+
+sudo mkdir -p /opt/cassandra/data
+sudo chmod -R 777 /opt/cassandra/data
+---> docker-compose.yml
+
+version: '3.8'
+
+networks:
+  cassandra_network:
+    driver: bridge  # Creates an isolated network for Cassandra nodes
+
+volumes:
+  cassandra_data:  # Persistent volume to store database data
+
+services:
+  cassandra-node1:
+    image: bitnami/cassandra:4.1.3
+    container_name: cassandra-node1
+    restart: unless-stopped  # Ensures container restarts if it stops unexpectedly
+    networks:
+      - cassandra_network
+    volumes:
+      - /opt/cassandra/data:/bitnami  # Mounts host directory for persistent storage
+    ports:
+      - "7000:7000"  # Internode communication (unencrypted)
+      - "7001:7001"  # Internode communication (encrypted)
+      - "9042:9042"  # CQL native transport (for client connections)
+      - "9160:9160"  # Thrift protocol (legacy support)
+      - "7199:7199"  # JMX monitoring (for managing the node)
+    environment:
+      CASSANDRA_CLUSTER_NAME: cassandra-cluster  # Defines the cluster name
+      CASSANDRA_SEEDS: cassandra-node1           # Specifies the seed node for discovery
+      CASSANDRA_PASSWORD_SEEDER: "yes"           # Enables password authentication
+      CASSANDRA_PASSWORD: mypassword             # Sets the password for the default 'cassandra' user
