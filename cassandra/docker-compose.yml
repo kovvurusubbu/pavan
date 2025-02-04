@@ -1,6 +1,15 @@
+touch  file.sh
+---------------
+#! /bin/bash
+sudo apt  update -y
+sudo apt install  docker.io -y
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
 
 sudo mkdir -p /opt/cassandra/data
 sudo chmod -R 777 /opt/cassandra/data
+=============================================================================
 ---> docker-compose.yml
 
 version: '3.8'
@@ -30,5 +39,6 @@ services:
     environment:
       CASSANDRA_CLUSTER_NAME: cassandra-cluster  # Defines the cluster name
       CASSANDRA_SEEDS: cassandra-node1           # Specifies the seed node for discovery
+      #CASSANDRA_SEEDS: "cassandra-node1,cassandra-node2,cassandra-node3"  # Specifies multiple seed nodes   // optional
       CASSANDRA_PASSWORD_SEEDER: "yes"           # Enables password authentication
       CASSANDRA_PASSWORD: mypassword             # Sets the password for the default 'cassandra' user
