@@ -1,7 +1,7 @@
 pl  create the vm
 -----------------
 1 sudo apt update -y
-2 sudo apt install  the docker.io -y
+2 sudo apt install  docker.io -y
 # install the docker-compose 
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
