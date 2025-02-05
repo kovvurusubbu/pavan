@@ -1,0 +1,58 @@
+Step 1: Create Directory Structure and Set Permissions
+
+# Create directories
+sudo mkdir -p /opt/mongodb/{data,conf}
+
+# Set ownership to root (or your user if preferred)
+sudo chown -R root:root /opt/mongodb
+
+# Set permissions for the data directory (MongoDB needs write access)
+sudo chmod -R 755 /opt/mongodb/data
+
+Step 2: Create the mongo.conf File
+# Create the mongo.conf file
+sudo nano /opt/mongodb/conf/mongo.conf
+
+storage:
+  dbPath: /data/db
+  journal:
+    enabled: true
+
+systemLog:
+  destination: file
+  logAppend: true
+  path: /var/log/mongodb/mongod.log
+
+net:
+  port: 55017  # Use port 55017
+  bindIp: 0.0.0.0
+
+security:
+  authorization: enabled
+
+
+Save and close the file
+sudo chmod 644 /opt/mongodb/conf/mongo.conf
+
+
+Step 3: Create the docker-compose.yml File
+sudo nano docker-compose.yml
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:3.6.0
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "55017:55017"  # Map host port 55017 to container port 55017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - /opt/mongodb/data:/data/db  # Persist data
+      - /opt/mongodb/conf/mongo.conf:/etc/mongod.conf  # Use custom config
+    command: mongod --config /etc/mongod.conf
+
+sudo chmod 644 docker-compose.yml
+sudo docker-compose up -d
