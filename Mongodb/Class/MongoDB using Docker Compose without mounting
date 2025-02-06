@@ -1,0 +1,85 @@
+Step 1: Update Packages and Install Docker
+sudo apt update -y
+sudo apt install docker.io -y
+
+docker --version
+
+sudo systemctl enable docker
+sudo systemctl start docker
+
+Step 2: Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.19.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+docker-compose --version
+
+Step 3: Create MongoDB Directory Structure
+mkdir -p ~/mongodb/config
+mkdir -p ~/mongodb/logs
+mkdir -p ~/mongodb/data
+
+Step 4: Set Permissions
+sudo chown -R root:root ~/mongodb
+sudo chmod -R 777 ~/mongodb
+
+ls -ld ~/mongodb/config
+
+Step 5: Create MongoDB Configuration File
+nano ~/mongodb/config/mongo.conf
+--------------
+storage:
+  dbPath: /data/db
+  journal:
+    enabled: true
+
+net:
+  bindIp: 0.0.0.0
+  port: 55017
+
+security:
+  authorization: enabled
+
+systemLog:
+  destination: file
+  path: /data/logs/mongod.log
+  logAppend: true
+----------------
+
+Step 6: Create Docker Compose File
+
+nano ~/mongodb/docker-compose.yml
+------------------------
+version: '3.7'
+
+services:
+  mongodb:
+    image: mongo:3.6.0
+    container_name: mongodb
+    restart: always
+    ports:
+      - "55017:55017"
+    volumes:
+      - ./data:/data/db
+      - ./config/mongo.conf:/etc/mongo.conf
+      - ./logs:/data/logs
+    command: mongod --config /etc/mongo.conf
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+-----------------------------------------
+cd ~/mongodb
+docker-compose up -d
+
+docker ps
+Step 9: Check MongoDB Logs
+tail -f ~/mongodb/logs/mongod.log
+List MongoDB data directory:
+ls -l ~/mongodb/data
+
+
+
+
