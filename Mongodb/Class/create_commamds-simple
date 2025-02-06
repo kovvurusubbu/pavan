@@ -1,0 +1,37 @@
+ docker-compose –version
+    2  sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    3  clear
+    4  lsblk
+    5  sudo fdisk /dev/sdb
+    6  sudo mkfs.ext4 /dev/sdb1
+    7  lsblk
+    8  sudo mount /sbd/sbd1 /mnt/mongodb
+    9  lsblk
+   10  ls -ld /mnt/mongodb
+   11  sudo mkdir -p /mnt/mongodb
+   12  sudo mount /dev/sdb1 /mnt/mongodb
+   13  df -h /mnt/mongodb
+   14  sudo nano /etc/fstab
+   15  lsblk
+   16  ls -ld /mnt/mongodb
+   17  mkdir -p ~/mongodb/logs
+   18  sudo chown -R root:root ~/mongodb/logs
+   19  sudo chmod -R 777 ~/mongodb/logs
+   20  ls -ld ~/mongodb/logs
+   21  mkdir -p ~/mongodb/config
+   22  sudo chown -R root:root ~/mongodb/config
+   23  ls -ld ~/mongodb/config
+   24  nano ~/mongodb/config/mongo.conf
+   25  nano ~/mongodb/docker-compose.yml
+   26  cd ~/mongodb
+   27  docker-compose up -d
+   28  docker ps
+   29  tail -f ~/mongodb/logs/mongod.log
+   30  docker ps
+   31  nano ~/mongodb/docker-compose.yml
+   32  cat  ~/mongodb/docker-compose.yml
+   33  mongo --host localhost --port 55017 -u upadmin -p upadmin@2025 --authenticationDatabase admin
+   34  apt install mongodb-clients
+   35  mongo --host localhost --port 55017 -u upadmin -p upadmin@2025 --authenticationDatabase admin
+   36  cd
+   37  docker ps 
