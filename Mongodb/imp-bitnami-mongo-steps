@@ -1,0 +1,177 @@
+**MongoDB Setup with High Security and Performance**
+
+## **Step 1: Identify the New Disk**
+Run the following command to check if the disk (`/dev/xvdt`) is available:
+```bash
+* lsblk
+```
+If the disk is listed but not formatted, proceed to the next step.
+
+## **Step 2: Format the Disk (EXT4)**
+⚠ **Warning:** This will erase all data on `/dev/xvdt`.
+```bash
+* sudo mkfs.ext4 /dev/xvdt
+```
+
+## **Step 3: Create a Mount Directory**
+```bash
+* sudo mkdir -p /mnt/data
+```
+
+## **Step 4: Mount the Disk**
+```bash
+* sudo mount /dev/xvdt /mnt/data
+```
+Verify the mount:
+```bash
+* df -h | grep /mnt/data
+```
+
+## **Step 5: Make the Mount Permanent**
+```bash
+* echo "/dev/xvdt /mnt/data ext4 defaults 0 0" | sudo tee -a /etc/fstab
+```
+Test if it mounts correctly:
+```bash
+* sudo mount -a
+```
+
+## **Step 6: Set Up MongoDB Data Directory**
+```bash
+* sudo mkdir -p /mnt/data/mongodb
+```
+
+## **Step 7: Set Permissions for MongoDB**
+```bash
+* sudo chown -R 1001:1001 /mnt/data/mongodb
+* sudo chmod -R 700 /mnt/data/mongodb
+```
+
+## **Step 8: Create MongoDB Configuration File**
+```bash
+* mkdir -p ~/bitnami-mongo/config
+* nano ~/bitnami-mongo/config/mongo.conf
+```
+Paste the following configuration:
+```yaml
+storage:
+  dbPath: /bitnami/mongodb/data
+  journal:
+    enabled: true
+  wiredTiger:
+    engineConfig:
+      cacheSizeGB: 2
+security:
+  authorization: enabled
+  enableEncryption: true
+systemLog:
+  destination: file
+  path: /bitnami/mongodb/logs/mongodb.log
+  logAppend: true
+  logRotate: rename
+  timeStampFormat: iso8601-utc
+net:
+  port: 55017
+  bindIp: 127.0.0.1
+operationProfiling:
+  mode: slowOp
+  slowOpThresholdMs: 100
+```
+
+## **Step 9: Create a Log Rotation Script**
+```bash
+* nano ~/bitnami-mongo/logs/rotate_logs.sh
+```
+Paste the following content:
+```bash
+#!/bin/bash
+LOG_DIR=/bitnami/mongodb/logs
+LOG_FILE=mongodb.log
+DATE=$(date +%Y-%m-%d_%H-%M-%S)
+
+mv $LOG_DIR/$LOG_FILE $LOG_DIR/mongodb_$DATE.log
+tar -czf $LOG_DIR/mongodb_$DATE.tar.gz -C $LOG_DIR mongodb_$DATE.log
+rm -f $LOG_DIR/mongodb_$DATE.log
+kill -USR1 $(pgrep mongod)
+```
+Make it executable:
+```bash
+* chmod +x ~/bitnami-mongo/logs/rotate_logs.sh
+```
+
+## **Step 10: Schedule Log Rotation via Cron**
+```bash
+& crontab -e
+```
+Add this line:
+```bash
+0 0 * * * ~/bitnami-mongo/logs/rotate_logs.sh
+```
+
+## **Step 11: Create `docker-compose.yml`**
+```bash
+& nano ~/bitnami-mongo/docker-compose.yml
+```
+Paste the following:
+```yaml
+version: "3.9"
+services:
+  mongodb:
+    image: bitnami/mongodb:8.0.4
+    container_name: bitnami-mongodb
+    restart: always
+    environment:
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=SuperSecurePass!@#
+      - MONGODB_USERNAME=myuser
+      - MONGODB_PASSWORD=UserSecurePass!@#
+      - MONGODB_DATABASE=mydatabase
+    ports:
+      - "127.0.0.1:55017:55017"
+    volumes:
+      - /mnt/data/mongodb:/bitnami/mongodb
+    command: [ "mongod", "--config", "/bitnami/mongodb/config/mongo.conf", "--port", "55017" ]
+```
+
+## **Step 12: Start MongoDB**
+```bash
+* cd ~/bitnami-mongo
+* docker-compose up -d
+```
+Check logs:
+```bash
+* docker logs bitnami-mongodb
+```
+
+## **Step 13: Verify MongoDB is Running**
+```bash
+ mongo --port 55017 -u root -p
+```
+For **Robo 3T** connection:
+- **Host:** `127.0.0.1`
+- **Port:** `55017`
+- **Authentication:**
+  - Database: `admin`
+  - User: `root`
+  - Password: `SuperSecurePass!@#`
+  - Auth Mechanism: `SCRAM-SHA-256`
+
+## **Step 14: Enable Automatic Start on Reboot**
+```bash
+sudo systemctl enable docker
+```
+To start MongoDB on reboot:
+```bash
+echo "cd ~/bitnami-mongo && docker-compose up -d" | sudo tee -a /etc/rc.local
+sudo chmod +x /etc/rc.local
+```
+
+## **Step 15: Test Everything**
+```bash
+df -h | grep /mnt/data
+ls -lah /mnt/data/mongodb
+docker logs bitnami-mongodb --tail 50
+```
+
+✅ **MongoDB is now running securely and efficiently on port 55017!** 🚀🔥
+
