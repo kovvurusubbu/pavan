@@ -1,0 +1,97 @@
+mkdir -p bitnami-mongo/{data,config,logs}
+cd bitnami-mongo
+
+nano config/mongo.conf
+
+# Storage Configuration
+storage:
+  dbPath: /bitnami/mongodb/data
+  journal:
+    enabled: true
+  wiredTiger:
+    engineConfig:
+      cacheSizeGB: 1
+
+# Security
+security:
+  authorization: enabled  # Enable user authentication
+
+# Logging Configuration
+systemLog:
+  destination: file
+  path: /bitnami/mongodb/logs/mongodb.log
+  logAppend: true
+  logRotate: rename
+  timeStampFormat: iso8601-utc
+
+# Network Configuration
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+
+# Operation Profiling
+operationProfiling:
+  mode: slowOp
+  slowOpThresholdMs: 200
+
+
+
+nano logs/rotate_logs.sh
+
+#!/bin/bash
+# Rotate MongoDB logs and compress them to .tar.gz files
+
+LOG_DIR=/bitnami/mongodb/logs
+LOG_FILE=mongodb.log
+DATE=$(date +%Y-%m-%d_%H-%M-%S)
+
+# Rotate and compress logs
+mv $LOG_DIR/$LOG_FILE $LOG_DIR/mongodb_$DATE.log
+tar -czf $LOG_DIR/mongodb_$DATE.tar.gz -C $LOG_DIR mongodb_$DATE.log
+rm -f $LOG_DIR/mongodb_$DATE.log
+
+# Restart MongoDB logging
+kill -USR1 $(pgrep mongod)
+
+
+chmod +x logs/rotate_logs.sh
+
+
+crontab -e
+
+0 0 * * * /bitnami/mongodb/logs/rotate_logs.sh
+
+nano docker-compose.yml
+
+version: "3.9"
+
+services:
+  mongodb:
+    image: bitnami/mongodb:8.0.4
+    container_name: bitnami-mongodb
+    restart: always
+    environment:
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=strongpassword123
+      - MONGODB_USERNAME=myuser
+      - MONGODB_PASSWORD=secureuserpassword123
+      - MONGODB_DATABASE=mydatabase
+    ports:
+      - "27017:27017"
+    volumes:
+      - /mnt/data/mongodb:/bitnami/mongodb
+
+
+
+Find the Attached Disk
+lsblk
+
+Format the Disk (If Unformatted)
+sudo mkfs.ext4 /dev/sdb
+
+sudo mount /dev/sdb /mnt/data
+echo "/dev/sdb /mnt/data ext4 defaults 0 0" | sudo tee -a /etc/fstab
+sudo chown -R 1001:1001 /mnt/data/mongodb
+sudo chmod -R 700 /mnt/data/mongodb
+docker-compose up -d 
+
