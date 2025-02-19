@@ -1,0 +1,77 @@
+CONFIGMAP:--
+------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: claims-services-api.conf
+  namespace: DEV
+data:
+  application.env.conf: |-
+    include "../application.conf"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: claims-services-api-env
+  namespace: DEV
+data:
+  SENTRY_ENVIRONMENT: staging
+  SENTRY_TAGS: cluster:k8s
+
+------------------------------------------------------
+Deployment file::--
+---------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claims-services-api
+  namespace: DEV
+  labels:
+    app: claims-services-api
+spec:
+  replicas: 1
+  minReadySeconds: 20
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: claims-services-api
+  template:
+    metadata:
+      labels:
+        app: claims-services-api
+    spec:
+      containers:
+      - name: claims-services-api
+        image: africa.helo.io/dev-dff/projects/claims-services-api:12345
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: claims-services-api-env
+        env:
+        - name: JAVA_OPTS
+          value: "-Xms256m -Xmx512m"
+        ports:
+        - containerPort: 9001
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 450m
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /opt/docker/conf/env/
+          name: claims-services-api-conf
+      imagePullSecrets:
+      - name: dockerauth
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: claims-services-api-conf
+        configMap:
+          name: claims-services-api.conf
