@@ -75,3 +75,8 @@ spec:
       - name: claims-services-api-conf
         configMap:
           name: claims-services-api.conf
+
+
+if you  want  incres value pl  incress resourecs ans 
+value: --- kubectl set env deployment/claims-services-api JAVA_OPTS="-Xms512m -Xmx1g" -n dev
+
