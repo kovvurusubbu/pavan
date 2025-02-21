@@ -1,0 +1,39 @@
+currently im using 6.0.3 now i want patch update ...use  below commands
+
+Pull the Latest MongoDB 6.0.11 Image
+
+docker pull mongo:6.0.11
+
+Step 2: Stop the Running MongoDB Container
+docker stop mongodb
+
+Step 3: Update the Container to Use the New Image
+Now, update the existing container without removing it using the docker commit method:
+docker commit mongodb mongodb_backup
+
+Then, start a new container with the latest image using the same volume and settings:
+
+docker run -d \
+        --name mongodb_new \
+        -p 27017:27017 \
+        -e MONGO_INITDB_ROOT_USERNAME=admin \
+        -e MONGO_INITDB_ROOT_PASSWORD=admin \
+        -v /opt/mongodb/data:/data/db \
+        --restart unless-stopped \
+        mongo:6.0.11
+
+Step 4: Verify the Update
+Check if the new container is running with MongoDB 6.0.11:
+
+docker ps
+docker exec -it mongodb_new mongod --version
+
+
+If everything is working fine, remove the old container (optional):
+
+docker rm mongodb
+docker rename mongodb_new mongodb
+
+
+✅ Result
+Your MongoDB is now patched from 6.0.3 to 6.0.11 without losing data and without removing the original container immediately. 🚀
