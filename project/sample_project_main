@@ -1,0 +1,198 @@
+# Deploying GitLab & Artifactory on AWS with CI/CD to EKS
+
+## **1. Overview**
+
+This document provides a step-by-step guide on setting up **GitLab, Artifactory, and CI/CD pipeline** on AWS. The setup includes:
+
+- Deploying **GitLab Runner** and **Artifactory** on EC2
+- Setting up **Amazon EKS (Elastic Kubernetes Service)**
+- Using **Amazon ECR (Elastic Container Registry)** for storing container images
+- Creating a **GitLab CI/CD pipeline** for automated deployments
+
+## **2. AWS Services Required**
+
+| **Service**  | **Purpose**                    |
+| ------------ | ------------------------------ |
+| **EKS**      | Kubernetes Cluster             |
+| **ECR**      | Docker Image Registry          |
+| **EC2**      | GitLab Runner & Artifactory VM |
+| **S3**       | Optional storage for artifacts |
+| **IAM**      | Permissions for CI/CD pipeline |
+| **Route 53** | Domain Name Management         |
+
+---
+
+## **3. Setting Up AWS Infrastructure**
+
+### **3.1. Create an EKS Cluster**
+
+1. Go to **AWS Console** → Navigate to **EKS** → Click **Create Cluster**
+2. Configure:
+   - **Cluster Name**: `my-eks-cluster`
+   - **Kubernetes Version**: Latest available
+   - **VPC & Subnets**: Select or create a VPC
+   - **Node Group**:
+     - Select **EC2 Instances** (e.g., `t3.medium`)
+     - Assign IAM Role: `AmazonEKSWorkerNodePolicy`
+3. Click **Create Cluster** and wait for completion.
+
+### **3.2. Configure ********`kubectl`******** and AWS CLI**
+
+```bash
+sudo apt update && sudo apt install -y awscli
+curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.25.0/2022-07-08/bin/linux/amd64/kubectl
+chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+aws eks update-kubeconfig --region us-east-1 --name my-eks-cluster
+kubectl get nodes
+```
+
+### **3.3. Set Up Amazon ECR (Container Registry)**
+
+```bash
+aws ecr create-repository --repository-name my-app
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+docker build -t my-app .
+docker tag my-app:latest <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+```
+
+---
+
+## **4. Deploying GitLab Runner on AWS**
+
+### **4.1. Launch EC2 Instance**
+
+1. Go to **AWS EC2** → Launch **Ubuntu 22.04** VM
+2. Install GitLab Runner:
+
+```bash
+sudo apt update && sudo apt install -y gitlab-runner
+```
+
+3. Register GitLab Runner:
+
+```bash
+sudo gitlab-runner register \
+  --url https://gitlab.com/ \
+  --registration-token <YOUR_GITLAB_REGISTRATION_TOKEN> \
+  --executor shell
+```
+
+---
+
+## **5. Deploying Artifactory on AWS**
+
+### **5.1. Install Artifactory on EC2**
+
+```bash
+wget https://bintray.com/jfrog/artifactory-rpms/download_file?file_path=jfrog-artifactory-oss-7.27.10.rpm
+sudo rpm -i jfrog-artifactory-oss-7.27.10.rpm
+```
+
+Access: `http://<EC2_PUBLIC_IP>:8081`
+
+---
+
+## **6. Configuring GitLab CI/CD Pipeline**
+
+### \*\*6.1. Update \*\***`.gitlab-ci.yml`**
+
+```yaml
+stages:
+  - build
+  - deploy
+
+variables:
+  AWS_REGION: "us-east-1"
+  EKS_CLUSTER_NAME: "my-eks-cluster"
+  AWS_ACCOUNT_ID: "123456789012"
+
+before_script:
+  - apt-get update && apt-get install -y awscli jq
+  - aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
+
+build:
+  stage: build
+  script:
+    - docker build -t my-app .
+    - docker tag my-app:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest
+
+deploy:
+  stage: deploy
+  script:
+    - kubectl apply -f k8s/deployment.yaml
+    - kubectl rollout status deployment/my-app
+```
+
+---
+
+## **7. Kubernetes Deployment Configuration**
+
+### \*\*7.1. Create \*\***`deployment.yaml`**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+        ports:
+        - containerPort: 80
+```
+
+---
+
+## **8. Setting Up Route 53 & Load Balancer**
+
+### **8.1. Configure Load Balancer**
+
+```bash
+kubectl expose deployment my-app --type=LoadBalancer --name=my-app-service
+```
+
+### **8.2. Add Route 53 Domain**
+
+1. Go to AWS **Route 53** → Create **Hosted Zone**
+2. Configure **DNS records** for your domain
+
+---
+
+## **9. Summary**
+
+### **9.1. AWS Services Used**
+
+✅ **EKS** → Kubernetes Cluster\
+✅ **ECR** → Container Registry\
+✅ **EC2** → GitLab Runner & Artifactory VM\
+✅ **S3** → Optional storage for artifacts\
+✅ **IAM** → Permissions for CI/CD pipeline\
+✅ **Route 53** → DNS setup
+
+### **9.2. GitLab CI/CD Workflow**
+
+✅ **Build Docker Image** → Push to **ECR**\
+✅ **Deploy to EKS** → Using **kubectl apply**\
+✅ **Use Route 53** → For domain setup
+
+---
+
+## **10. Next Steps**
+
+1️⃣ **Migrate applications** from GCP to AWS\
+2️⃣ **Test CI/CD pipeline** end-to-end\
+3️⃣ **Monitor deployments** with AWS CloudWatch
+
+---
