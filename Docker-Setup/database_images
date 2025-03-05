@@ -1,0 +1,109 @@
+# Docker Setup Guide for MongoDB, Kafka, Elasticsearch, Cassandra, and PostgreSQL
+
+## Step 1: Update System and Install Docker
+```bash
+sudo yum update -y
+sudo yum install docker -y
+sudo systemctl enable docker
+sudo systemctl restart docker
+```
+
+## Step 2: Set Up MongoDB
+```bash
+docker pull mongo:6.0.3
+docker run -d \
+  --name mongodb \
+  -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=admin \
+  -v /opt/mongodb/data:/data/db \
+  --restart unless-stopped \
+  mongo:6.0.3
+```
+
+## Step 3: Set Up Kafka
+```bash
+mkdir -p /opt/kafka/data
+chmod 0777 /opt/kafka/data
+docker network create kafka_network
+docker pull bitnami/kafka:3.6
+
+docker run --name kafka \
+  -dit --restart unless-stopped \
+  --net=kafka_network \
+  -v /opt/kafka/data:/bitnami/kafka \
+  -p 9092:9092 \
+  -e KAFKA_CFG_NODE_ID=0 \
+  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
+  -e KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093 \
+  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
+  -e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092 \
+  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+  -e KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT \
+  -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+  bitnami/kafka:3.6
+```
+
+## Step 4: Set Up Elasticsearch
+```bash
+sysctl -w vm.max_map_count=262144
+mkdir /opt/esdatadir
+chmod 0777 /opt/esdatadir
+chgrp 1000 /opt/esdatadir
+
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+docker network create es_network
+
+docker run --name elastic-search \
+  -dit --restart unless-stopped \
+  --net=es_network \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  -v /opt/esdatadir:/usr/share/elasticsearch/data \
+  -e "bootstrap.memory_lock=true" --ulimit memlock=-1:-1 --ulimit nofile=65535:65535 \
+  -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
+  -e "discovery.type=single-node" \
+  docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+```
+
+## Step 5: Set Up Cassandra
+```bash
+mkdir -p /opt/cassandra/data
+chmod 777 /opt/cassandra/data
+docker network create cassandra_network
+docker pull bitnami/cassandra:4.1.3
+
+docker run --name cassandra-node1 \
+  -dit --restart unless-stopped \
+  --net=cassandra_network \
+  -v /opt/cassandra/data:/bitnami \
+  -p 7000:7000 \
+  -p 7001:7001 \
+  -p 9042:9042 \
+  -p 9160:9160 \
+  -p 7199:7199 \
+  -e CASSANDRA_CLUSTER_NAME=cassandra-cluster \
+  -e CASSANDRA_SEEDS=cassandra-node1 \
+  -e CASSANDRA_PASSWORD_SEEDER=yes \
+  -e CASSANDRA_PASSWORD=mypassword \
+  bitnami/cassandra:4.1.3
+```
+
+## Step 6: Set Up PostgreSQL
+```bash
+mkdir -p /opt/postgres/data
+chmod 777 /opt/postgres/data
+docker network create postgres_network
+docker pull postgres:15
+
+docker run --name postgres-db \
+  -dit --restart unless-stopped \
+  --net=postgres_network \
+  -v /opt/postgres/data:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=admin \
+  -e POSTGRES_DB=mydatabase \
+  postgres:15
+```
+
