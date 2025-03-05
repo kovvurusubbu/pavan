@@ -1,0 +1,146 @@
+**Step-by-Step Guide to Setting Up MongoDB, Kafka, Elasticsearch, and Cassandra Using Docker**
+
+## **Step 1: Update the System and Install Docker**
+1. Update system packages:
+   ```bash
+   sudo yum update -y
+   ```
+2. Install Docker:
+   ```bash
+   sudo yum install docker -y
+   ```
+3. Enable Docker to start on boot:
+   ```bash
+   sudo systemctl enable docker
+   ```
+4. Restart Docker:
+   ```bash
+   sudo systemctl restart docker
+   ```
+
+---
+
+## **Step 2: Install and Run MongoDB Container**
+1. Pull the MongoDB image:
+   ```bash
+   docker pull mongo:6.0.3
+   ```
+2. Run the MongoDB container:
+   ```bash
+   docker run -d \
+     --name mongodb \
+     -p 27017:27017 \
+     -e MONGO_INITDB_ROOT_USERNAME=admin \
+     -e MONGO_INITDB_ROOT_PASSWORD=admin \
+     -v /opt/mongodb/data:/data/db \
+     --restart unless-stopped \
+     mongo:6.0.3
+   ```
+
+---
+
+## **Step 3: Install and Run Kafka Container**
+1. Create a data directory for Kafka:
+   ```bash
+   mkdir -p /opt/kafka/data
+   chmod 0777 /opt/kafka/data
+   ```
+2. Create a Docker network for Kafka:
+   ```bash
+   docker network create kafka_network
+   ```
+3. Pull the Kafka image:
+   ```bash
+   docker pull bitnami/kafka:3.6
+   ```
+4. Run the Kafka container:
+   ```bash
+   docker run --name kafka \
+     -dit --restart unless-stopped \
+     --net=kafka_network \
+     -v /opt/kafka/data:/bitnami/kafka \
+     -p 9092:9092 \
+     -e KAFKA_CFG_NODE_ID=0 \
+     -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
+     -e KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093 \
+     -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
+     -e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092 \
+     -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+     -e KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT \
+     -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+     bitnami/kafka:3.6
+   ```
+
+---
+
+## **Step 4: Install and Run Elasticsearch Container**
+1. Set system limits:
+   ```bash
+   sysctl -w vm.max_map_count=262144
+   ```
+2. Create a data directory for Elasticsearch:
+   ```bash
+   mkdir /opt/esdatadir
+   chmod 0777 /opt/esdatadir
+   chgrp 1000 /opt/esdatadir
+   ```
+3. Pull the Elasticsearch image:
+   ```bash
+   docker pull docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+   ```
+4. Create a Docker network for Elasticsearch:
+   ```bash
+   docker network create es_network
+   ```
+5. Run the Elasticsearch container:
+   ```bash
+   docker run --name elastic-search \
+     -dit --restart unless-stopped \
+     --net=es_network \
+     -p 9200:9200 \
+     -p 9300:9300 \
+     -v /opt/esdatadir:/usr/share/elasticsearch/data \
+     -e "bootstrap.memory_lock=true" --ulimit memlock=-1:-1 --ulimit nofile=65535:65535 \
+     -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
+     -e "discovery.type=single-node" \
+     docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+   ```
+
+---
+
+## **Step 5: Install and Run Cassandra Container**
+1. Create a data directory for Cassandra:
+   ```bash
+   mkdir -p /opt/cassandra/data
+   chmod 777 /opt/cassandra/data
+   ```
+2. Create a Docker network for Cassandra:
+   ```bash
+   docker network create cassandra_network
+   ```
+3. Pull the Cassandra image:
+   ```bash
+   docker pull bitnami/cassandra:4.1.3
+   ```
+4. Run the Cassandra container:
+   ```bash
+   docker run --name cassandra-node1 \
+     -dit --restart unless-stopped \
+     --net=cassandra_network \
+     -v /opt/cassandra/data:/bitnami \
+     -p 7000:7000 \
+     -p 7001:7001 \
+     -p 9042:9042 \
+     -p 9160:9160 \
+     -p 7199:7199 \
+     -e CASSANDRA_CLUSTER_NAME=cassandra-cluster \
+     -e CASSANDRA_SEEDS=cassandra-node1 \
+     -e CASSANDRA_PASSWORD_SEEDER=yes \
+     -e CASSANDRA_PASSWORD=mypassword \
+     bitnami/cassandra:4.1.3
+   ```
+
+---
+docker logs <container_name>
+```
+
