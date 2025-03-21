@@ -4,6 +4,13 @@ sudo yum install docker -y
 sudo systemctl enable docker
 sudo systemctl restart docker
 
+
+mongodump commands:---
+----------------------
+wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2004-x86_64-100.9.4.tgz
+tar -xvzf mongodb-database-tools-*.tgz
+sudo mv mongodb-database-tools-*/bin/* /usr/local/bin/
+
 ---> 
 Pull and Run MongoDB Docker Container
 * docker pull mongo:6.0.3
