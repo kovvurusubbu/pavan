@@ -1,0 +1,107 @@
+simple deploymenbts:==
+---------------------------
+DevSecOps Project Deployment Guide
+
+# DevSecOps Project Deployment Guide
+IN  AWS 
+## Prerequisites
+- Ubuntu Server
+- Internet access
+- Domain or public IP address
+
+## Step 1: Clone the Repository
+```bash
+git clone https://github.com/neamulkabiremon/devsecops-project.git
+cd devsecops-project
+```
+
+## Step 2: Install Node.js using NVM
+```bash
+# Install NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+source ~/.bashrc  # Load NVM into the shell
+
+# Install and use Node.js version 18
+nvm install 18
+nvm use 18
+
+# Verify installation
+node -v
+npm -v
+```
+
+## Step 3: Install Project Dependencies and Build
+```bash
+npm install
+npm run build  # Generates a production-ready version in the 'dist/' folder
+```
+
+## Step 4: Install and Configure Nginx
+```bash
+sudo apt update
+sudo apt install nginx -y
+```
+
+## Step 5: Deploy the Build to Nginx
+```bash
+# Create deployment directory
+sudo mkdir -p /var/www/devsecops
+
+# Copy the build files from 'dist/' instead of 'build/'
+sudo cp -r dist/* /var/www/devsecops/
+
+# Set correct permissions
+sudo chown -R www-data:www-data /var/www/devsecops
+sudo chmod -R 755 /var/www/devsecops
+```
+
+## Step 6: Configure Nginx
+```bash
+sudo nano /etc/nginx/sites-available/devsecops
+```
+
+### Add the following configuration:
+```nginx
+server {
+    listen 80;
+    server_name 54.175.217.119;  # Replace with your actual server IP or domain
+
+    root /var/www/devsecops;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    error_page 404 /index.html;
+}
+```
+
+## Step 7: Enable the Site and Restart Nginx
+```bash
+# Create a symbolic link to enable the site
+sudo ln -s /etc/nginx/sites-available/devsecops /etc/nginx/sites-enabled/
+
+# Test Nginx configuration for syntax errors
+sudo nginx -t
+
+# Restart Nginx to apply changes
+sudo systemctl restart nginx
+```
+
+## Step 8: Verify Deployment
+```bash
+ls -l /var/www/devsecops/
+```
+
+## Step 9: Troubleshooting
+### Check Nginx Logs for Errors
+```bash
+sudo tail -f /var/log/nginx/error.log
+```
+
+### Verify Nginx Service Status
+```bash
+sudo systemctl status nginx
+```
+
