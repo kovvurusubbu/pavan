@@ -1,0 +1,21 @@
+# Create a directory for persistent storage with secure permissions
+sudo mkdir -p /opt/postgres/data
+sudo chown -R 1001:1001 /opt/postgres/data  # Bitnami's PostgreSQL runs as UID 1001
+sudo chmod 700 /opt/postgres/data  # Restrict access
+
+# Create a dedicated Docker network
+docker network create postgres_network
+
+# Pull the Bitnami PostgreSQL 9.6.24 image
+docker pull bitnami/postgresql:9.6.24
+
+# Run the PostgreSQL container
+docker run --name postgres-db \
+  -d --restart unless-stopped \
+  --net=postgres_network \
+  -v /opt/postgres/data:/bitnami/postgresql \
+  -p 5432:5432 \
+  -e POSTGRESQL_USERNAME=superadmin \
+  -e POSTGRESQL_PASSWORD=password
+  -e POSTGRESQL_DATABASE=postgres \
+  bitnami/postgresql:9.6.24
