@@ -1,0 +1,65 @@
+apt update -y
+apt  install docker.io -y
+sudo mkdir -p /opt/postgres/data
+sudo mkdir -p /opt/postgres
+sudo touch /opt/postgres/postgresql.conf
+sudo chown -R 1001:1001 /opt/postgres/data
+sudo chown 1001:1001 /opt/postgres/postgresql.conf
+sudo chmod 700 /opt/postgres/data
+sudo chmod 600 /opt/postgres/postgresql.conf
+
+
+mkdir  pg
+cd pg
+touch docker-compose.yml
+---
+version: '3.3'
+
+services:
+  postgres:
+    image: bitnami/postgresql:9.6.24
+    container_name: postgres-db
+    restart: unless-stopped
+    networks:
+      - postgres_network
+    volumes:
+      - /opt/postgres/data:/bitnami/postgresql
+      - /opt/postgres/postgresql.conf:/opt/bitnami/postgresql/conf/postgresql.conf
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: P@ssw0rd123!
+      POSTGRESQL_DATABASE: postgres
+      POSTGRESQL_CONF_FILE: /opt/bitnami/postgresql/conf/postgresql.conf
+
+networks:
+  postgres_network:
+    driver: bridge
+
+
+----
+GO to pgadmin tool ---> connect the pg admin and after the pl create the  database name called --> channel-p
+
+after you can give the below  query
+----------------------------------------------
+DO $$ 
+BEGIN
+    CREATE USER channel_partner_user WITH PASSWORD 'StrongPasswordHere';
+    GRANT CONNECT ON DATABASE channel-p TO channel_partner_user;
+    GRANT USAGE, CREATE ON SCHEMA public TO channel_partner_user;
+    GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO channel_partner_user;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE ON TABLES TO channel_partner_user;
+END $$;
+-------------------------------
+user is created...>
+
+
+if anyissues geography
+To fix it, you need to enable the PostGIS extension:
+CREATE EXTENSION postgis;
+
+CREATE TABLE public.geometries (
+    name geography NOT NULL,
+    geom geometry
+);
