@@ -19,3 +19,23 @@ docker run --name postgres-db \
   -e POSTGRESQL_PASSWORD=password
   -e POSTGRESQL_DATABASE=postgres \
   bitnami/postgresql:9.6.24
+
+
+
+
+
+=====================================================
+2option:=-
+
+sudo docker run -d \
+  --name postgres-db \
+  --restart unless-stopped \
+  --network postgres_network \
+  -v /opt/postgres/data:/bitnami/postgresql \
+  -v /opt/postgres/postgresql.conf:/opt/bitnami/postgresql/conf/postgresql.conf \
+  -p 5432:5432 \
+  -e POSTGRESQL_USERNAME=postgres \
+  -e POSTGRESQL_PASSWORD=kratospassword \
+  -e POSTGRESQL_DATABASE=kratos \
+  -e POSTGRESQL_CONF_FILE=/opt/bitnami/postgresql/conf/postgresql.conf \
+  bitnami/postgresql:9.6.24
