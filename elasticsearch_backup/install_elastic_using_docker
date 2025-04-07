@@ -1,0 +1,41 @@
+sudo apt update -y
+apt install docker.io -y
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+mkdir -p /opt/esdatadir
+chmod 777 /opt/esdatadir
+
+docker run --name elasticsearch \
+  -d --restart unless-stopped \
+  --network es_network \
+  -p 9200:9200 -p 9300:9300 \
+  -v /opt/esdatadir:/usr/share/elasticsearch/data \
+  --ulimit memlock=-1:-1 \
+  --ulimit nofile=65535:65535 \
+  -e "bootstrap.memory_lock=true" \
+  -e "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
+  -e "discovery.type=single-node" \
+  -e "ELASTIC_USERNAME=elastic" \
+  -e "ELASTIC_PASSWORD=tameenprod" \
+  docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+
+
+
+sudo apt update -y
+sudo apt install nginx -y
+sudo nano /etc/nginx/sites-available/default
+
+server {
+    listen 80;
+
+    location /elasticsearch/ {
+        rewrite ^/elasticsearch/(.*)$ /$1 break;
+        proxy_pass http://localhost:9200;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+
+sudo nginx -t
+sudo systemctl reload nginx
+sudo service nginx reload
