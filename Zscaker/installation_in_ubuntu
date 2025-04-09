@@ -1,0 +1,21 @@
+sudo apt update
+
+sudo apt upgrade
+
+curl -O https://d32a6ru7mhaq0c.cloudfront.net/Zscaler-linux-1.5.1.27-installer.run
+
+chmod +x Zscaler-linux-1.5.1.27-installer.run
+
+sudo ./Zscaler-linux-1.5.1.27-installer.run
+
+systemctl status zscaler
+
+sudo systemctl start zscaler
+
+sudo systemctl enable zscaler
+
+journalctl -u zscaler
+
+chmod +x Zscaler-linux-1.5.1.27-installer.run
+
+sudo ./Zscaler-linux-1.5.1.27-installer.run
