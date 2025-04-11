@@ -1,0 +1,62 @@
+this query find the  which tables missiing 
+---------------------------------------------
+
+https://www.gillmeister-software.com/online-tools/text/add-prefix-or-suffix-to-lines.aspx
+
+
+---- ... ... ... 
+
+WITH expected_tables(table_name) AS (
+  VALUES
+    ('10_data'),
+    ('AGENTS_CHANNELMAPPING'),
+    ('AGENTS_INFO'),
+    ('AGENTS_STOREMAPPING'),
+    ('CHAMPION_INFO'),
+    ('CHANNEL_CALL_CENTER_COMMENT_DETAILS'),
+    ('CHANNEL_CALL_CENTER_INSURED_DETAILS'),
+    ('CHANNEL_CALL_CENTER_USERINFO_DETAILS'),
+    ('CHANNEL_CALL_CENTER_USER_ADDRESS'),
+    ('CHANNEL_PARTNER_COI_MASTER'),
+    ('CHANNEL_PARTNER_INSURED_MEMBERS'),
+    ('CHANNEL_PARTNER_MASTER'),
+    ('CHANNEL_PARTNER_TRANSACTION_INFO'),
+    ('CHANNEL_PARTNER_USER_INFO'),
+    ('CHECKLIST'),
+    ('CONTACTS'),
+    ('FIELD-AGENTS_AGENTS_MAPPING'),
+    ('FIELD-AGENTS_CHANNELMAPPING'),
+    ('FIELD-AGENTS_INFO'),
+    ('FIELD_OPS_ADMIN_CHANNELMAPPING'),
+    ('FIELD_OPS_ADMIN_INFO'),
+    ('FOADMIN_AGENTS_MAPPING'),
+    ('FOADMIN_FIELD-AGENTS_MAPPING'),
+    ('GROUPS_INFO'),
+    ('MEDICINES'),
+    ('MEMBER_INFO'),
+    ('NEW_POLICY_SMS_DETAILS'),
+    ('PAYMENT_TRANSACTION_INFO'),
+    ('POS_AGENT_VERIFICATION'),
+    ('POS_TRAINING_DATA'),
+    ('PRESCRIPTION_FILE'),
+    ('RENEWAL_POLICY_SMS_DETAILS'),
+    ('SMS_TOKEN_DETAILS'),
+    ('STORES'),
+    ('STORE_CHANNEL_MAPPING'),
+    ('STORE_TYPES'),
+    ('USER_CHECKLIST_DATA'),
+    ('USER_CHECKLIST_ITEMS'),
+    ('USER_PRESCRIPTION'),
+    ('activity_rating_master'),
+    ('agent_codes_masters'),
+    ('agent_uuid_to_agent_code_mapping'),
+    ('ameyo_user_calls'),
+    ('aml_screening_result'),
+    ('artwork'),
+    ('authors')
+ 
+)
+SELECT e.table_name
+FROM expected_tables e
+LEFT JOIN pg_tables p ON p.tablename = e.table_name AND p.schemaname = 'public'
+WHERE p.tablename IS NULL;
