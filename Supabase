@@ -1,0 +1,112 @@
+1 download the github url:
+  git clone --depth 1 https://github.com/supabase/supabase
+  cd supabase/docker
+  cp .env.example .env
+
+POSTGRES_PASSWORD=supabase
+POSTGRES_USER=pguser
+POSTGRES_DB=postgres
+POSTGRES_HOST=34.47.228.46
+POSTGRES_PORT=5432
+
+JWT_SECRET=your-super-secret-jwt-token-with-at-least-32-characters-long
+ANON_KEY=your-anon-key
+SERVICE_ROLE_KEY=your-service-role-key
+
+
+1. JWT_SECRET
+openssl rand -base64 32
+like this --> JWT_SECRET=rG0l0jJfDp+aFG9vq3hWImF6bFn9l7oh6w5V6JlLfUE=
+
+2. ANON_KEY
+openssl rand -base64 32
+like this --> ANON_KEY=kfjHcdGVgdhG1VqKP8T94g6L+z6ogmKrdWvsrXgGc24=
+
+3 touch payload.json
+npm install jsonwebtoken
+node -e "console.log(require('jsonwebtoken').sign(require('./payload.json'), 'rG0l0jJfDp+aFG9vq3hWImF6bFn9l7oh6w5V6JlLfUE='))"
+
+
+past the key in SERVICE_ROLE_KEY..
+
+/supabase/docker/
+touch kong.yml
+
+
+lost -->docker compose up -d
+
+
+
+version: "3.8"
+
+services:
+  kong:
+    image: kong:2.7
+    container_name: kong
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+    volumes:
+      - ./kong.yml:/usr/local/kong/kong.yml
+
+  gotrue:
+    image: supabase/gotrue:v2.170.0
+    container_name: supabase-gotrue
+    depends_on:
+      - kong
+    environment:
+      GOTRUE_DB_DRIVER: "postgres"
+      GOTRUE_DB_DATABASE_URL: postgres://pguser:supabase@13.232.30.33:5432/postgres
+      JWT_SECRET: "${JWT_SECRET}"
+      SITE_URL: "http://localhost:3000"
+      GOTRUE_SITE_URL: "http://localhost:3000"
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_DISABLE_SIGNUP: "false"
+
+  realtime:
+    image: supabase/realtime:v2.26.8
+    container_name: supabase-realtime
+    depends_on:
+      - kong
+    environment:
+      DB_HOST: "13.232.30.33"
+      DB_PORT: "5432"
+      DB_NAME: "postgres"
+      DB_USER: "pguser"
+      DB_PASSWORD: "supabase"
+      PORT: "4000"
+      DB_SSL: "false"
+      REPLICATION_MODE: "RLS"
+      REPLICATION_SLOT_NAME: "supabase_realtime"
+      PUBLICATIONS: "supabase_realtime"
+      SECURE_CHANNELS: "false"
+      ENABLE_TAILSCALE: "false"
+      SEED_SELF_HOST: "true"
+
+  studio:
+    image: supabase/studio:20240513-d025e0f
+    container_name: supabase-studio
+    depends_on:
+      - kong
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_PASSWORD: "supabase"
+      POSTGRES_HOST: "34.47.228.46"
+      POSTGRES_DB: "postgres"
+      POSTGRES_PORT: "5432"
+      STUDIO_PG_META_PORT: "8080"
+      SUPABASE_URL: "http://localhost:8000"
+      SUPABASE_PUBLIC_URL: "http://localhost:8000"
+      NEXT_PUBLIC_ENABLE_LOGS: "true"
