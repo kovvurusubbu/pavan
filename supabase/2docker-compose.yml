@@ -1,0 +1,64 @@
+services:
+  auth:
+    container_name: supabase-auth
+    image: supabase/gotrue:v2.107.0
+    restart: unless-stopped
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://pguser:supabase@13.232.30.33:5432/postgres
+      GOTRUE_SITE_URL: ${SITE_URL}
+      GOTRUE_URI_ALLOW_LIST: ${ADDITIONAL_REDIRECT_URLS}
+      GOTRUE_DISABLE_SIGNUP: ${DISABLE_SIGNUP}
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${JWT_EXPIRY}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+
+  rest:
+    container_name: supabase-rest
+    image: postgrest/postgrest:v12.2.8
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: postgres://pguser:supabase@13.232.30.33:5432/postgres
+      PGRST_DB_SCHEMAS: ${PGRST_DB_SCHEMAS}
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+
+  storage:
+    container_name: supabase-storage
+    image: supabase/storage-api:v1.19.3
+    restart: unless-stopped
+    volumes:
+      - ./volumes/storage:/var/lib/storage:z
+    environment:
+      DATABASE_URL: postgres://pguser:supabase@13.232.30.33:5432/postgres
+
+  meta:
+    container_name: supabase-meta
+    image: supabase/postgres-meta:v0.87.1
+    restart: unless-stopped
+    environment:
+      PG_META_DB_HOST: 13.232.30.33
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: pguser
+      PG_META_DB_PASSWORD: supabase
+
+  studio:
+    container_name: supabase-studio
+    image: supabase/studio:20240513-d025e0f
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth
+      - rest
+      - storage
+      - meta
+    environment:
+      SUPABASE_URL: http://localhost:8000
+      SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3MTMwMDAwMDAsImV4cCI6MTk5OTk5OTk5OX0.I2n5qyC-Py_-oX4hstPgJwqBgc_q55LSdiGm3vkL4VY
