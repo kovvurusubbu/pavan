@@ -23,6 +23,14 @@ openssl rand -base64 32
 like this --> ANON_KEY=kfjHcdGVgdhG1VqKP8T94g6L+z6ogmKrdWvsrXgGc24=
 
 3 touch payload.json
+{
+  "role": "service_role",
+  "iss": "supabase",
+  "iat": 1713000000,
+  "exp": 1999999999
+}
+
+ 
 npm install jsonwebtoken
 node -e "console.log(require('jsonwebtoken').sign(require('./payload.json'), 'rG0l0jJfDp+aFG9vq3hWImF6bFn9l7oh6w5V6JlLfUE='))"
 
