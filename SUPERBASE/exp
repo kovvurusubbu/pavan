@@ -1,0 +1,128 @@
+# 📘 Supabase Self-Hosted Setup Documentation
+
+## 🔧 Objective
+Set up a fully self-hosted Supabase stack using external PostgreSQL database on IP `13.233.245.229` with user-defined credentials. This document outlines each step taken to bring all core services up and running, with the correct permissions and roles configured.
+
+---
+
+## ⚙️ Environment Setup
+
+### 📍 External Postgres Credentials
+```
+HOST: 13.233.245.229
+USERNAME: pguser
+PASSWORD: supabase
+DATABASE: postgres
+```
+
+### 📦 Services Used from Supabase Docker Compose
+- Supabase Studio (`supabase-studio`)
+- Kong Gateway (`supabase-kong`)
+- Authentication (`supabase-auth`)
+- REST API / PostgREST (`supabase-rest`)
+- Storage API (`supabase-storage`)
+- Meta API (`supabase-meta`)
+
+> Analytics (`supabase-analytics`) was removed by user request.
+
+---
+
+## 🧱 Docker Compose Customization
+
+### ✅ Commented Out Internal Postgres (`db:` service)
+- All services were modified to point to external PostgreSQL host.
+- Internal migrations and user permissions were set manually.
+
+### ✅ Removed Analytics
+- Removed `supabase-analytics` container.
+- Removed `depends_on: analytics` from all services.
+- Removed related ENV variables (e.g., `LOGFLARE_API_KEY`).
+
+---
+
+## 🛠 Manual Role Setup in PostgreSQL
+
+Connected to DB using:
+```bash
+psql -h 13.233.245.229 -U pguser -d postgres
+```
+
+Created required roles:
+```sql
+CREATE ROLE supabase_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE supabase_auth_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE supabase_storage_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE authenticator;
+CREATE ROLE anon;
+CREATE ROLE authenticated;
+CREATE ROLE service_role;
+```
+
+Granted required access:
+```sql
+GRANT USAGE, CREATE ON SCHEMA public TO supabase_admin;
+GRANT USAGE, CREATE ON SCHEMA public TO supabase_auth_admin;
+GRANT USAGE, CREATE ON SCHEMA public TO supabase_storage_admin;
+GRANT USAGE ON SCHEMA public TO anon;
+GRANT USAGE ON SCHEMA public TO authenticated;
+GRANT USAGE ON SCHEMA public TO service_role;
+```
+
+Created missing schema:
+```sql
+CREATE SCHEMA auth AUTHORIZATION supabase_auth_admin;
+```
+
+Created required custom type for MFA:
+```sql
+CREATE TYPE auth.factor_type AS ENUM ('totp', 'webauthn', 'recovery', 'sms');
+```
+
+---
+
+## 🔁 Container Restarts
+
+After fixing roles and schemas, services were restarted one by one:
+```bash
+sudo docker compose restart supabase-auth
+sudo docker compose restart supabase-rest
+sudo docker compose restart supabase-storage
+```
+
+All services were confirmed running via:
+```bash
+sudo docker ps
+```
+
+---
+
+## ✅ Final Status
+All containers are up and healthy:
+- Studio: ✅
+- Kong: ✅
+- Auth: ✅
+- REST: ✅
+- Storage: ✅
+- Meta: ✅
+
+> Supabase is now successfully self-hosted with an external PostgreSQL setup.
+
+---
+
+## 🧪 (Optional) Next Steps
+- Test sign-up/login flow with GoTrue
+- Run REST queries via `/rest/v1/<table>`
+- Upload files using Storage API
+- Manage DB via Supabase Studio
+
+---
+
+## 📝 Maintainer Notes
+- PostgreSQL version: 15.12
+- PSQL CLI version: 12.22 (still compatible)
+- Compose file modified with comments for internal DB removal and custom external roles
+
+---
+
+For future provisioning, consider automating the role creation using an SQL bootstrap file.
+
