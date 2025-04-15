@@ -1,0 +1,253 @@
+ sudo docker pull postgres:15
+15: Pulling from library/postgres
+8a628cdd7ccc: Pull complete 
+7f231089d790: Pull complete 
+e315323dafc9: Pull complete 
+eac1e56d4ee8: Pull complete 
+90463926d2a7: Pull complete 
+b1654e8e1b7f: Pull complete 
+8a0c5f7da6d6: Pull complete 
+88de5978531b: Pull complete 
+f9509fe905c8: Pull complete 
+27e79f9556ed: Pull complete 
+3a416bb02678: Pull complete 
+c33dbe9c2f08: Pull complete 
+75dd0845c5ca: Pull complete 
+ea429041403b: Pull complete 
+Digest: sha256:fe45ed1a824b81c0c9c605890963b67501758ca8c946db89089c85ce0f88e974
+Status: Downloaded newer image for postgres:15
+docker.io/library/postgres:15
+openworldinsurance@pg-db:~$ sudo docker run --name postgres-db \
+>   -dit --restart unless-stopped \
+>   --net=postgres_network \
+>   -v /opt/postgres/data:/var/lib/postgresql/data \
+>   -p 5432:5432 \
+>   -e POSTGRES_USER=pguser \
+>   -e POSTGRES_PASSWORD=supabase \
+>   -e POSTGRES_DB=postgres \
+>   postgres:15
+373de0d60c2ae5311a9a549711d398545fd0b28fcc57b3892376f2818e010299
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ sudo docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+373de0d60c2a   postgres:15   "docker-entrypoint.s…"   9 seconds ago   Up 7 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   postgres-db
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ sudo docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS         PORTS                                       NAMES
+373de0d60c2a   postgres:15   "docker-entrypoint.s…"   11 seconds ago   Up 9 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   postgres-db
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ 
+openworldinsurance@pg-db:~$ psql -h localhost -U pguser -d postgres
+
+Command 'psql' not found, but can be installed with:
+
+apt install postgresql-client-common
+Please ask your administrator.
+
+openworldinsurance@pg-db:~$ sudo apt install postgresql-client-common
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following NEW packages will be installed:
+  postgresql-client-common
+0 upgraded, 1 newly installed, 0 to remove and 1 not upgraded.
+Need to get 28.2 kB of archives.
+After this operation, 182 kB of additional disk space will be used.
+Get:1 http://asia-south1.gce.archive.ubuntu.com/ubuntu focal-updates/main amd64 postgresql-client-common all 214ubuntu0.1 [28.2 kB]
+Fetched 28.2 kB in 0s (89.6 kB/s)                   
+Selecting previously unselected package postgresql-client-common.
+(Reading database ... 62865 files and directories currently installed.)
+Preparing to unpack .../postgresql-client-common_214ubuntu0.1_all.deb ...
+Unpacking postgresql-client-common (214ubuntu0.1) ...
+Setting up postgresql-client-common (214ubuntu0.1) ...
+Processing triggers for man-db (2.9.1-1) ...
+openworldinsurance@pg-db:~$ psql -h 10.160.0.15 -U pguser -d postgres
+Error: You must install at least one postgresql-client-<version> package
+openworldinsurance@pg-db:~$ sudo docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED              STATUS              PORTS                                       NAMES
+373de0d60c2a   postgres:15   "docker-entrypoint.s…"   About a minute ago   Up About a minute   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   postgres-db
+openworldinsurance@pg-db:~$ sudo apt install postgresql-client -y
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following additional packages will be installed:
+  libpq5 postgresql-client-12
+Suggested packages:
+  postgresql-12 postgresql-doc-12
+The following NEW packages will be installed:
+  libpq5 postgresql-client postgresql-client-12
+0 upgraded, 3 newly installed, 0 to remove and 1 not upgraded.
+Need to get 1195 kB of archives.
+After this operation, 4536 kB of additional disk space will be used.
+Get:1 http://asia-south1.gce.archive.ubuntu.com/ubuntu focal-updates/main amd64 libpq5 amd64 12.22-0ubuntu0.20.04.2 [118 kB]
+Get:2 http://asia-south1.gce.archive.ubuntu.com/ubuntu focal-updates/main amd64 postgresql-client-12 amd64 12.22-0ubuntu0.20.04.2 [1073 kB]
+Get:3 http://asia-south1.gce.archive.ubuntu.com/ubuntu focal-updates/main amd64 postgresql-client all 12+214ubuntu0.1 [3940 B]
+Fetched 1195 kB in 1s (1315 kB/s)
+Selecting previously unselected package libpq5:amd64.
+(Reading database ... 62902 files and directories currently installed.)
+Preparing to unpack .../libpq5_12.22-0ubuntu0.20.04.2_amd64.deb ...
+Unpacking libpq5:amd64 (12.22-0ubuntu0.20.04.2) ...
+Selecting previously unselected package postgresql-client-12.
+Preparing to unpack .../postgresql-client-12_12.22-0ubuntu0.20.04.2_amd64.deb ...
+Unpacking postgresql-client-12 (12.22-0ubuntu0.20.04.2) ...
+Selecting previously unselected package postgresql-client.
+Preparing to unpack .../postgresql-client_12+214ubuntu0.1_all.deb ...
+Unpacking postgresql-client (12+214ubuntu0.1) ...
+Setting up libpq5:amd64 (12.22-0ubuntu0.20.04.2) ...
+Setting up postgresql-client-12 (12.22-0ubuntu0.20.04.2) ...
+update-alternatives: using /usr/share/postgresql/12/man/man1/psql.1.gz to provide /usr/share/man/man1/psql.1.gz (psql.1.gz) in auto mode
+Setting up postgresql-client (12+214ubuntu0.1) ...
+Processing triggers for libc-bin (2.31-0ubuntu9.17) ...
+openworldinsurance@pg-db:~$ psql -h 10.160.0.15 -U pguser -d postgres
+Password for user pguser: 
+psql (12.22 (Ubuntu 12.22-0ubuntu0.20.04.2), server 15.12 (Debian 15.12-1.pgdg120+1))
+WARNING: psql major version 12, server major version 15.
+         Some psql features might not work.
+Type "help" for help.
+
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# CREATE ROLE supabase_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE
+postgres=# CREATE ROLE supabase_auth_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE
+postgres=# CREATE ROLE authenticator LOGIN PASSWORD 'supabase';
+CREATE ROLE
+postgres=# CREATE DATABASE _supabase OWNER supabase_admin;
+CREATE DATABASE
+postgres=# GRANT ALL PRIVILEGES ON DATABASE postgres TO supabase_admin;
+GRANT
+postgres=# GRANT ALL PRIVILEGES ON DATABASE postgres TO supabase_auth_admin;
+GRANT
+postgres=# GRANT CONNECT ON DATABASE postgres TO authenticator;
+GRANT
+postgres=# exit
+openworldinsurance@pg-db:~$ psql -h 13.233.245.229 -U postgres -d postgres
+Password for user postgres: 
+openworldinsurance@pg-db:~$ psql -h 10.160.0.15 -U pguser -d postgres
+Password for user pguser: 
+psql (12.22 (Ubuntu 12.22-0ubuntu0.20.04.2), server 15.12 (Debian 15.12-1.pgdg120+1))
+WARNING: psql major version 12, server major version 15.
+         Some psql features might not work.
+Type "help" for help.
+
+postgres=# GRANT CREATE, USAGE ON SCHEMA public TO supabase_admin;
+GRANT
+postgres=# GRANT CREATE, USAGE ON SCHEMA public TO supabase_auth_admin;
+GRANT
+postgres=# GRANT CREATE, USAGE ON SCHEMA public TO authenticator;
+GRANT
+postgres=# CREATE SCHEMA auth AUTHORIZATION supabase_auth_admin;
+CREATE SCHEMA
+postgres=# CREATE SCHEMA auth AUTHORIZATION pguser;
+ERROR:  schema "auth" already exists
+postgres=# psql -h 13.233.245.229 -U pguser -d postgres
+postgres-# 
+postgres-# 
+postgres-# 
+postgres-# 
+postgres-# CREATE ROLE postgres;
+ERROR:  syntax error at or near "psql"
+LINE 1: psql -h 13.233.245.229 -U pguser -d postgres
+        ^
+postgres=# GRANT SELECT ON auth.users TO postgres WITH GRANT OPTION;
+ERROR:  role "postgres" does not exist
+postgres=# \q
+openworldinsurance@pg-db:~$ psql -h 13.233.245.229 -U pguser -d postgres
+Password for user pguser: 
+openworldinsurance@pg-db:~$ psql -h 10.160.0.15 -U pguser -d postgres
+Password for user pguser: 
+psql (12.22 (Ubuntu 12.22-0ubuntu0.20.04.2), server 15.12 (Debian 15.12-1.pgdg120+1))
+WARNING: psql major version 12, server major version 15.
+         Some psql features might not work.
+Type "help" for help.
+
+postgres=# CREATE ROLE postgres;
+CREATE ROLE
+postgres=# CREATE TYPE auth.factor_type AS ENUM (
+postgres(#   'totp',
+postgres(#   'webauthn',
+postgres(#   'recovery',
+postgres(#   'sms'
+postgres(# );
+CREATE TYPE
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# CREATE TABLE auth.factors (
+postgres(#   id UUID PRIMARY KEY,
+postgres(#   user_id UUID NOT NULL,
+postgres(#   factor_type auth.factor_type NOT NULL,
+postgres(#   created_at TIMESTAMP DEFAULT NOW()
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TYPE auth.factor_type AS ENUM (
+postgres(#   'totp',
+postgres(#   'webauthn',
+postgres(#   'recovery',
+postgres(#   'sms'
+postgres(# );
+ERROR:  type "factor_type" already exists
+postgres=# CREATE TYPE auth.factor_type AS ENUM (
+postgres(#   'totp',
+postgres(#   'webauthn',
+postgres(#   'recovery',
+postgres(#   'sms'
+postgres(# );
+ERROR:  type "factor_type" already exists
+postgres=# INSERT INTO auth.factors (id, user_id, factor_type)
+postgres-# VALUES (
+postgres(#   gen_random_uuid(), 
+postgres(#   gen_random_uuid(), 
+postgres(#   'totp'
+postgres(# );
+INSERT 0 1
+postgres=# CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# CREATE ROLE supabase_storage_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE
+postgres=# GRANT CREATE, USAGE ON SCHEMA public TO supabase_storage_admin;
+GRANT
+postgres=# GRANT ALL PRIVILEGES ON DATABASE postgres TO supabase_storage_admin;
+GRANT
+postgres=# ALTER ROLE supabase_storage_admin WITH PASSWORD 'supabase';
+ALTER ROLE
+postgres=# \d
+                    List of relations
+ Schema |       Name        | Type  |        Owner        
+--------+-------------------+-------+---------------------
+ public | schema_migrations | table | supabase_auth_admin
+(1 row)
+
+postgres=# 
+postgres=# 
+postgres=# exit
+openworldinsurance@pg-db:~$ psql -h 10.160.0.15 -U pguser -d postgres
+Password for user pguser: 
+psql (12.22 (Ubuntu 12.22-0ubuntu0.20.04.2), server 15.12 (Debian 15.12-1.pgdg120+1))
+WARNING: psql major version 12, server major version 15.
+         Some psql features might not work.
+Type "help" for help.
+
+postgres=# CREATE ROLE anon;
+CREATE ROLE
+postgres=# GRANT USAGE ON SCHEMA public TO anon;
+GRANT
+postgres=# CREATE ROLE authenticated;
+CREATE ROLE
+postgres=# GRANT USAGE ON SCHEMA public TO authenticated;
+GRANT
+postgres=# CREATE ROLE service_role;
+CREATE ROLE
+postgres=# GRANT USAGE ON SCHEMA public TO service_role;
+GRANT
