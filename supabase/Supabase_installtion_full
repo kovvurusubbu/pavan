@@ -1,0 +1,121 @@
+1st ------ 
+you  can setup the postgres  at 12 + version support subabase
+folllow the steps--->>
+
+sudo apt update -y
+sudo apt install docker.io -y
+sudo  chmod 777 /opt/postgres/data
+sudo docker network create postgres_network
+docker pull bitnami/postgresql:15
+
+2nd-----------
+
+sudo docker run --name postgres-db \
+  -dit \
+  --restart unless-stopped \
+  --net=postgres_network \
+  -v /opt/postgres/data:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  -e POSTGRES_USER=pguser \
+  -e POSTGRES_PASSWORD=supabase \
+  -e POSTGRES_DB=postgres \
+  postgres:15
+ 
+
+---
+if you need login in the vm pl use below
+sud apt update -y
+sudo apt install postgresql-client-common
+psql -h 10.170.0.15 -U pguser -d postgres
+
+----
+
+SQL Schema and Role Setup for Supabase Authentication===
+************************************************************
+1. Create the auth Schema
+CREATE SCHEMA IF NOT EXISTS auth;
+2. Grant Schema Privileges to supabase_auth_admin
+GRANT ALL ON SCHEMA auth TO supabase_auth_admin;
+3. Create users Table
+CREATE TABLE auth.users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  aud VARCHAR(255),
+  role VARCHAR(255),
+  email VARCHAR(255),
+  encrypted_password VARCHAR(255),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+4. Create identities Table
+CREATE TABLE auth.identities (
+  id TEXT,
+  user_id UUID REFERENCES auth.users(id),
+  provider TEXT,
+  PRIMARY KEY (provider, id)
+);
+5. Set Ownership of Tables to supabase_auth_admin
+ALTER TABLE auth.users OWNER TO supabase_auth_admin;
+ALTER TABLE auth.identities OWNER TO supabase_auth_admin;
+6. Grant Privileges on Schema and Tables to supabase_auth_admin
+GRANT ALL PRIVILEGES ON SCHEMA auth TO supabase_auth_admin;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO supabase_auth_admin;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA auth TO supabase_auth_admin;
+Role Creation and Privilege Assignment
+7. Create Roles
+CREATE ROLE supabase_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE supabase_auth_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE supabase_storage_admin LOGIN PASSWORD 'supabase';
+CREATE ROLE authenticator;
+CREATE ROLE anon;
+CREATE ROLE authenticated;
+CREATE ROLE service_role;
+8. Grant Schema Usage Privileges to Roles
+GRANT USAGE, CREATE ON SCHEMA public TO supabase_admin;
+GRANT USAGE, CREATE ON SCHEMA public TO supabase_auth_admin;
+GRANT USAGE, CREATE ON SCHEMA public TO supabase_storage_admin;
+GRANT USAGE ON SCHEMA public TO anon;
+GRANT USAGE ON SCHEMA public TO authenticated;
+GRANT USAGE ON SCHEMA public TO service_role;
+9. Create auth Schema with supabase_auth_admin as Owner (Optional)
+CREATE SCHEMA auth AUTHORIZATION supabase_auth_admin;
+
+====Pg
+Step-by-Step Configuration--
+docker ps
+docker exec -it <postgres_container_name> bash
+cd /var/lib/postgresql/data
+
+Edit the postgresql.conf File
+vim postgresql.conf
+Make the Necessary Changes--
+In the postgresql.conf file, make the following changes:
+---------------------------------------------------------
+# Enable logical replication for Supabase Realtime
+wal_level = logical
+
+# Set the number of maximum concurrent replication connections
+max_wal_senders = 10
+
+# Set the number of replication slots
+max_replication_slots = 10
+
+# Configure JWT for authentication (Supabase specific)
+jwt.verify_algorithm = 'HS256'
+jwt.secret = '2faf77400bf9e85b23c1d5c8ff585e1639e262a20f5ea037f8327ed0aa2cab80'
+
+-------------------------------------------------------------
+docker restart <postgres_container_name>
+
+
+step 2 subabase configurtions;;=
+=================================
+=================================
+
+CREATE THE supabase pl follow below all
+git clone https://github.com/supabase/supabase.git
+cd supabase/docker
+
+pl follow the superbase url here  --> net page im create the .env file and docker-compose file 
+
+
+
