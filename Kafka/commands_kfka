@@ -1,0 +1,25 @@
+sudo nano /opt/bitnami/kafka/config/server.properties 
+message.max.bytes=20485760 
+replica.fetch.max.bytes=20485760 
+sudo /opt/bitnami/ctlscript.sh restart kafka
+ 
+./bin/kafka-topics.sh --list --zookeeper localhost:2181   // this is showing the all the topics 
+
+
+
+sudo /opt/bitnami/ctlscript.sh status kafka
+sudo /opt/bitnami/ctlscript.sh status zookeeper
+
+./bin/kafka-configs.sh --zookeeper localhost:2181 --entity-type topics --entity-name claim-events --describe
+./bin/kafka-configs.sh --zookeeper localhost:2181 --entity-type topics --entity-name claim-events --alter --add-config max.message.bytes=20485760    // this is the paticaler topic give the maxsize...
+ 
+./bin/kafka-configs.sh --zookeeper localhost:2181 --entity-type topics --entity-name claim-events --describe
+
+sudo tail -f /opt/bitnami/kafka/logs/server.log
+sudo tail -n 50 -f /opt/bitnami/kafka/logs/server.log
+sudo tail -f /opt/bitnami/kafka/logs/server.log | grep -i error
+sudo tail -f /opt/bitnami/kafka/logs/{server.log,controller.log,state-change.log}
+sudo tail -f -n +1 /opt/bitnami/kafka/logs/server.log | cat -n
+
+
+
