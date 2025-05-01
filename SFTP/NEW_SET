@@ -1,0 +1,139 @@
+SFTP Server Setup with Docker & Full User Permissions
+Purpose: Configure a secure SFTP server using Docker (atmoz/sftp) where each user has full read/write/delete permissions in their home directory.
+
+1. Prerequisites
+Ubuntu/Debian-based Linux server (AWS EC2, Local VM, etc.)
+
+Docker installed (If not, follow Step 1 below)
+
+AWS CLI (optional, for S3 sync)
+
+2. Installation & Setup
+🔹 Step 1: Install Docker
+bash
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+🔹 Step 2: Create Host Directories
+bash
+sudo mkdir -p /sftp/ball
+sudo mkdir -p /sftp/subbu
+sudo mkdir -p /sftp/pavan
+sudo chown -R 1000:1000 /sftp/*
+sudo chmod -R 755 /sftp/*   # Default secure permissions
+🔹 Step 3: Pull SFTP Docker Image
+bash
+sudo docker pull atmoz/sftp
+🔹 Step 4: Run SFTP Container (Full Permissions)
+bash
+sudo docker run -d \
+  --name sftpU \
+  -p 2222:22 \
+  -v /sftp/ball:/home/ball \
+  -v /sftp/subbu:/home/subbu \
+  -v /sftp/pavan:/home/pavan \
+  -e UMASK=0000 \  # Full permissions (rw-rw-rw- files, rwxrwxrwx dirs)
+  atmoz/sftp \
+  ball:Subbu@786:1001 \
+  subbu:Subbu@786:1002 \
+  pavan:Subbu@786:1003
+Explanation:
+
+UMASK=0000 → Gives full permissions to users.
+
+Users: ball, subbu, pavan (Password: Subbu@786)
+
+Each user gets full access to /home/<username>.
+
+3. Configure AWS Security Group (If Using EC2)
+Open Port 2222 in the Inbound Rules of your EC2 Security Group.
+
+Protocol: TCP
+
+Source: 0.0.0.0/0 (or restrict to your IP for security).
+
+4. Test SFTP Connection
+✔ From Linux/Mac Terminal
+bash
+sftp -P 2222 subbu@your-server-ip
+(Enter password: Subbu@786)
+
+✔ From FileZilla/WinSCP
+Host: your-server-ip
+
+Port: 2222
+
+Username: subbu (or ball, pavan)
+
+Password: Subbu@786
+
+Protocol: SFTP
+
+Expected Behavior:
+✅ Can create/delete/modify files & folders in /home/<user>.
+✅ No "Permission Denied" errors.
+
+5. (Optional) Automatic S3 Sync
+🔹 Install AWS CLI
+bash
+sudo apt install -y awscli
+aws configure
+# Enter AWS Access Key, Secret Key, and Region
+🔹 Create Sync Script (/home/ubuntu/sftp-sync.sh)
+bash
+#!/bin/bash
+
+BUCKET_NAME="your-s3-bucket-name"
+LOG_FILE="/home/ubuntu/sftp-sync.log"
+
+echo "[$(date)] Starting sync..." >> $LOG_FILE
+
+aws s3 sync /sftp/ball s3://$BUCKET_NAME/ball/ --delete >> $LOG_FILE 2>&1
+aws s3 sync /sftp/subbu s3://$BUCKET_NAME/subbu/ --delete >> $LOG_FILE 2>&1
+aws s3 sync /sftp/pavan s3://$BUCKET_NAME/pavan/ --delete >> $LOG_FILE 2>&1
+
+echo "[$(date)] Sync completed!" >> $LOG_FILE
+Make it executable:
+
+bash
+chmod +x /home/ubuntu/sftp-sync.sh
+🔹 Schedule Sync Every 5 Minutes (Cron Job)
+bash
+crontab -e
+Add:
+
+bash
+*/5 * * * * /home/ubuntu/sftp-sync.sh
+6. Troubleshooting
+🔸 If Users Still Can’t Write
+Check container logs:
+
+bash
+sudo docker logs sftpU
+Reset permissions:
+
+bash
+sudo chmod -R 777 /sftp/*  # Temporary full access (testing only)
+Restart container:
+
+bash
+sudo docker restart sftpU
+🔸 If S3 Sync Fails
+Check aws configure settings.
+
+Verify IAM user has s3:PutObject permissions.
+
+Check logs:
+
+bash
+cat /home/ubuntu/sftp-sync.log
+7. Security Recommendations (Post-Setup)
+Restrict permissions after testing:
+
+bash
+sudo chmod -R 755 /sftp/*  # Owner: full, Others: read-only
+Use SSH keys instead of passwords (more secure).
+
+Limit AWS S3 permissions (least privilege principle).
+
