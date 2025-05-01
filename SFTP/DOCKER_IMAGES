@@ -18,3 +18,101 @@ Here user subbu  pwd: Subbu@786
 sudo docker inspect ea7cf7b78d6a | grep "IP"
 
 install the https://www.computernetworkingnotes.com/linux-tutorials/how-to-install-filezilla-ftp-client-in-ubuntu.html
+
+
+
+
+
+new_steps:--
+----------
+i'm creating 1 vm in aws 
+
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+
+
+📁 Step 1: Create Host Folders for SFTP Users
+sudo mkdir -p /sftp/ball/uploads
+sudo mkdir -p /sftp/subbu/uploads
+sudo mkdir -p /sftp/pavan/uploads
+sudo chown -R 1000:1000 /sftp/*
+
+📦 Step 2: Pull the Docker Image
+sudo docker pull atmoz/sftp
+
+
+🚀 Step 3: Run the SFTP Container
+sudo docker run -d \
+  --name sftpU \
+  -p 2222:22 \
+  -v /sftp/ball:/home/ball \
+  -v /sftp/subbu:/home/subbu \
+  -v /sftp/pavan:/home/pavan \
+  atmoz/sftp \
+  ball:Subbu@786:1001 \
+  subbu:Subbu@786:1002 \
+  pavan:Subbu@786:1003
+
+
+📝 This:
+
+Runs SFTP on port 2222
+Creates users: ball, subbu, pavan (password Subbu@786)
+Creates a folder for each user at /home/<user>/uploads
+
+
+🌐 Step 4: Open Port in AWS Security Gro
+   In your AWS EC2 Console:
+   Navigate to Security Groups
+   Select your EC2 instance’s security group
+   Edit Inbound Rules and add:
+   Type	Protocol	Port Range	Source
+   Custom  TCP	  TCP	  2222	   0.0.0.0/0
+
+
+ Step 5: Test Connection
+✅ From Inside EC2:-
+   sftp -P 2222 subbu@localhost
+
+
+✅ From FileZilla (or WinSCP):
+    Host: your-ec2-public-ip
+    Port: 2222
+    Protocol: SFTP
+    Username: subbu
+    Password: Subbu@786
+
+✅ Accept the host key
+
+
+
+###
+Install AWS CLI & Configure
+sudo apt update
+sudo apt install awscli -y
+aws configure
+
+
+. Create a Sync Script
+  Create /home/ubuntu/sftp-sync.sh:
+
+
+#!/bin/bash
+
+BUCKET_NAME="your-s3-bucket-name"
+
+aws s3 sync /host/sftp_data/ball/uploads s3://$BUCKET_NAME/ball/
+aws s3 sync /host/sftp_data/subbu/uploads s3://$BUCKET_NAME/subbu/
+aws s3 sync /host/sftp_data/pavan/uploads s3://$BUCKET_NAME/pavan/
+
+
+chmod +x /home/ubuntu/sftp-sync.sh
+
+. Setup Cron to Sync Every 5 Minutes
+crontab -e
+
+Add:
+*/5 * * * * /home/ubuntu/sftp-sync.sh >> /home/ubuntu/sftp-sync.log 2>&1
+
