@@ -1,0 +1,19 @@
+sudo apt update -y
+sudo apt install docker.io -y
+sudo systemctl enable docker
+sudo systemctl start docker
+
+docker volume create artifactory_data
+
+
+docker run -d \
+  --name artifactory \
+  -p 8081:8081 \
+  -p 8082:8082 \
+  -v artifactory_data:/var/opt/jfrog/artifactory \
+  docker.bintray.io/jfrog/artifactory-oss:7.49.6
+
+
+🔐 Default Credentials:
+Username: admin
+Password: password
