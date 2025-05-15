@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# MongoDB connection details
+HOST=".....73"
+PORT="27017"
+USER=""
+PASSWORD=""
+AUTH_DB="staging-catalog"
+DB="staging-catalog"
+OUTPUT_DIR="/home/subbu/mongo/backup"
+
+# Ensure the output directory exists
+mkdir -p "$OUTPUT_DIR"
+
+# Calculate the Unix timestamp for 3 months ago
+THREE_MONTHS_AGO_TS=$(($(date +%s) - 60*60*24*90))  # Current time - 90 days in seconds
+# Convert to hex and append zeroes to form ObjectId
+OBJECT_ID_HEX=$(printf '%08x0000000000000000' $THREE_MONTHS_AGO_TS)
+
+# List of collections to back up
+collections=(
+  "cp_json_req_mapper"
+  "cp_json_res_mapper"
+)
+
+# Loop through collections and back them up
+for collection in "${collections[@]}"; do
+  echo "Backing up collection: $collection"
+  QUERY='{"_id": {"$gte": {"$oid": "'"$OBJECT_ID_HEX"'"}}}'
+  mongodump --host "$HOST" --port "$PORT" -u "$USER" -p "$PASSWORD" \
+    --authenticationDatabase "$AUTH_DB" --db "$DB" --collection "$collection" \
+    --query "$QUERY" --out "$OUTPUT_DIR"
+  if [ $? -eq 0 ]; then
+    echo "Successfully backed up collection: $collection"
+  else
+    echo "Failed to back up collection: $collection"
+  fi
+done
+
+echo "Backup process completed."
