@@ -1,0 +1,18 @@
+(( This suery is the take backup data ))
+
+
+#!/bin/bash
+BACKUP_PATH="/home/subbu/Desktop/pgg"
+FILENAME="postgres_campaign_$(date +%Y%m%d).dump"
+PGPASSWORD='cfakfgngj' pg_dump -h 0.0.0.0 \
+    -U channel_darl -d campaign -F c -b -v -f $BACKUP_PATH/$FILENAME
+echo "Backup saved to $BACKUP_PATH/$FILENAME"
+
+----------
+
+this is  the  restore  the  data to db
+#!/bin/bash
+
+BACKUP_FILE="/home/subbu/Desktop/pgg/postgres_campaign_$(date +%Y%m%d).dump"
+PGPASSWORD='admin' pg_restore -h 44.203.144.247 -U admin -d mydatabase -v $BACKUP_FILE
+echo "Database restored successfully!"
