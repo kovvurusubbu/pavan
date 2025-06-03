@@ -62,4 +62,17 @@ sudo docker ps
 sudo docker rename new-elastic-search  elastic-search
 sudo docker inspect elastic-search | grep "IP"
 
-
+use this ---
+docker run --name elastic-search \
+    -dit --restart unless-stopped \
+    --net=es_network \
+    -p 9200:9200 \
+    -p 9300:9300 \
+    -v /opt/esdatadir:/usr/share/elasticsearch/data \
+    -e "bootstrap.memory_lock=true" --ulimit memlock=-1:-1 --ulimit nofile=65535:65535 \
+    -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
+    -e "discovery.type=single-node" \
+    -e "xpack.security.enabled=true" \
+    -e "ELASTIC_USERNAME=user" \
+    -e "ELASTIC_PASSWORD=uoZDvA4RLmAp" \
+    docker.elastic.co/elasticsearch/elasticsearch:7.5.2 
