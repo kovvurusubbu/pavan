@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# MongoDB connection details
+HOST=""
+PORT=""
+USER=""
+PASSWORD=""
+AUTH_DB="product-catalog"
+DB="product-catalog"
+OUTPUT_DIR="/home/subbu/mongo/backup"
+
+# Ensure the output directory exists
+mkdir -p "$OUTPUT_DIR"
+
+# List of collections to back up
+collections=(
+  "channel_partners_hierarchies"
+  "channel_partners_hierarchies_histories"
+)
+
+# Loop through collections and back them up
+for collection in "${collections[@]}"; do
+  echo "Backing up collection: $collection"
+  mongodump --host "$HOST" --port "$PORT" -u "$USER" -p "$PASSWORD" \
+    --authenticationDatabase "$AUTH_DB" --db "$DB" --collection "$collection" \
+    --out "$OUTPUT_DIR"
+  if [ $? -eq 0 ]; then
+    echo "Successfully backed up collection: $collection"
+  else
+    echo "Failed to back up collection: $collection"
+  fi
+done
+
+echo "Backup process completed."
