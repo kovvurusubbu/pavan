@@ -10,3 +10,9 @@ using the alpha and the --legacy flag to support older BSON formats.
 mongoimport --host=IP --port=27017 --username=////// --db=databasename --collection=spefic_collection_name  --legacy --file=ts1.json
 
 
+
+
+
+imp command:
+----------
+mongorestore --host 132.4.3 --port 55017 --username alpha_app --password " kjfnkjfnsdkdjvbj" --authenticationDatabase product-catalog -d product-catalog --collection channel_partners_hierarchies_histories "C:\Users\testing\Downloads\staging-product-catalog\staging-product-catalog\channel_partners_hierarchies_histories.bson"
