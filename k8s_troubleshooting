@@ -1,0 +1,44 @@
+curl -Iv https://subbu.com
+
+curl = a command-line tool to transfer data from or to a server.
+-I = fetch only the headers (HEAD request).
+-v = verbose output (shows details like SSL handshake, IP address, etc.).
+Debugging connectivity issues.
+Checking if DNS resolution is working.
+Validating SSL certificate.
+Checking firewall, egress, or security group issues.
+
+==> kubectl exec -it pod_name -n dev -- curl -Iv Domain...
+
+
+✅ Difference Between -I and -Iv:
+| Option | Meaning                             | Output                                     |
+| ------ | ----------------------------------- | ------------------------------------------ |
+| `-I`   | Fetch only HTTP **headers**         | Shows **status code** and **headers** only |
+| `-Iv`  | Same as `-I`, with **verbose mode** | Shows extra details like:                  |
+
+DNS resolution
+IP address
+SSL handshake
+Connection reuse
+Redirects, etc. |
+
+kubectl exec -it subbu-portal-6bc78b -n dev -- curl -I https://api.subbu.com
+
+
+curl -I https://api.subbu.in
+curl -v https://api.subbu.in
+nslookup api.subbu.in
+telnet api.subbu.in 443
+
+
+
+From Linux VM or Workstation
+🔸 1. DNS Lookup
+dig api.subbu.in
+ping api.subbu.in
+🔸 3. Port Test
+curl -Iv https://api.subbu.in
+nc -vz api.subbu.in 443
+🔸 4. Traceroute
+traceroute api.subbu.in
