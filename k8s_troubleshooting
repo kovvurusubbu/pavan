@@ -42,3 +42,7 @@ curl -Iv https://api.subbu.in
 nc -vz api.subbu.in 443
 🔸 4. Traceroute
 traceroute api.subbu.in
+
+# Check your cluster's outbound IP
+kubectl exec -it debug-utils -nuat -- curl -s https://ipinfo.io/ip
+
