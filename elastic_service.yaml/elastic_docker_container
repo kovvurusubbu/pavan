@@ -1,21 +1,36 @@
-steps:-
+# Step 1: Increase the vm.max_map_count for Elasticsearch
+sudo sysctl -w vm.max_map_count=262144
 
-sysctl -w vm.max_map_count=262144
-        mkdir /opt/esdatadir
-        chmod 0777 /opt/esdatadir
-        chgrp 1000 /opt/esdatadir
+# Make it permanent (optional)
+echo "vm.max_map_count=262144" | sudo tee -a /etc/sysctl.conf
 
+# Step 2: Create and set permissions on the data directory
+sudo mkdir -p /opt/esdatadir
+sudo chmod 0777 /opt/esdatadir
+sudo chgrp 1000 /opt/esdatadir
+
+# Step 3: Pull the Elasticsearch Docker image
 docker pull docker.elastic.co/elasticsearch/elasticsearch:7.5.2
-        docker network create es_network
+
+# Step 4: Create a Docker network for Elasticsearch
+docker network create es_network
+
+# Step 5: Run the Elasticsearch container
+sudo docker run --name elastic-search \
+  -dit \
+  --restart unless-stopped \
+  --net=es_network \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  -v /opt/esdatadir:/usr/share/elasticsearch/data \
+  -e "bootstrap.memory_lock=true" \
+  --ulimit memlock=-1:-1 \
+  --ulimit nofile=65535:65535 \
+  -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
+  -e "discovery.type=single-node" \
+  -e "xpack.security.enabled=true" \
+  -e "ELASTIC_USERNAME=user" \
+  -e "ELASTIC_PASSWORD=uoZDvA4RLmAp" \
+  docker.elastic.co/elasticsearch/elasticsearch:7.5.2
 
 
-docker run --name elastic-search \
-        -dit --restart unless-stopped \
-        --net=es_network \
-        -p 9200:9200 \
-        -p 9300:9300 \
-        -v /opt/esdatadir:/usr/share/elasticsearch/data \
-        -e "bootstrap.memory_lock=true" --ulimit memlock=-1:-1 --ulimit nofile=65535:65535 \
-        -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
-        -e "discovery.type=single-node" \
-        docker.elastic.co/elasticsearch/elasticsearch:7.5.2
