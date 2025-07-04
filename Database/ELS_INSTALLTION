@@ -1,0 +1,114 @@
+sysctl -w vm.max_map_count=262144
+        mkdir /opt/esdatadir
+        chmod 0777 /opt/esdatadir
+        chgrp 1000 /opt/esdatadir
+ 
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+docker network create es_network
+
+sudo docker volume create elasticsearch_data
+
+✅ Final Updated Command with Docker Volume:
+
+sudo docker run --name elastic-search \
+  -dit \
+  --restart unless-stopped \
+  --net=es_network \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  -v elasticsearch_data:/usr/share/elasticsearch/data \
+  -e "bootstrap.memory_lock=true" \
+  --ulimit memlock=-1:-1 \
+  --ulimit nofile=65535:65535 \
+  -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
+  -e "discovery.type=single-node" \
+  -e "xpack.security.enabled=true" \
+  -e "ELASTIC_USERNAME=elastic" \
+  -e "ELASTIC_PASSWORD=uoZDvA4RLmAp" \
+  docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+
+
+=========================================================================================
+🧭 Steps for Zero-Downtime (Single Node Setup)
+
+📦 1. Create a new volume (backup optional)
+
+Create a temporary backup of your current data volume, just in case:
+# Backup (optional, recommended)
+sudo docker run --rm \
+  -v elasticsearch_data:/from \
+  -v $(pwd)/es_backup:/to \
+  alpine cp -a /from /to
+
+
+🟢 2. Run a new container (new version) on a different port
+Run upgraded Elasticsearch on different ports (e.g., 9201, 9301) and mount the same data volume:
+
+sudo docker run --name elastic-search-new \
+  -dit \
+  --restart unless-stopped \
+  --net=es_network \
+  -p 9201:9200 \
+  -p 9301:9300 \
+  -v elasticsearch_data:/usr/share/elasticsearch/data \
+  -e "bootstrap.memory_lock=true" \
+  --ulimit memlock=-1:-1 \
+  --ulimit nofile=65535:65535 \
+  -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
+  -e "discovery.type=single-node" \
+  -e "xpack.security.enabled=true" \
+  -e "ELASTIC_USERNAME=elastic" \
+  -e "ELASTIC_PASSWORD=uoZDvA4RLmAp" \
+  docker.elastic.co/elasticsearch/elasticsearch:7.17.18
+
+
+🔄 This does a few things:
+Mounts same data (volume).
+Starts new version on different port.
+Validates data compatibility and runtime.
+
+
+🧪 3. Test the new version
+curl -u elastic:uoZDvA4RLmAp http://localhost:9201
+
+Check logs:
+docker logs -f elastic-search-new
+
+✅ If it works correctly, you can switch traffic.
+
+🔄 4. Switch Port 9200 to New Version
+Stop old container:
+
+sudo docker stop elastic-search
+sudo docker rm elastic-search
+
+Restart new container with standard ports:
+sudo docker stop elastic-search-new
+sudo docker rm elastic-search-new
+
+then:
+--------------------------
+sudo docker run --name elastic-search \
+  -dit \
+  --restart unless-stopped \
+  --net=es_network \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  -v elasticsearch_data:/usr/share/elasticsearch/data \
+  -e "bootstrap.memory_lock=true" \
+  --ulimit memlock=-1:-1 \
+  --ulimit nofile=65535:65535 \
+  -e ES_JAVA_OPTS="-Xms1g -Xmx1g" \
+  -e "discovery.type=single-node" \
+  -e "xpack.security.enabled=true" \
+  -e "ELASTIC_USERNAME=elastic" \
+  -e "ELASTIC_PASSWORD=uoZDvA4RLmAp" \
+  docker.elastic.co/elasticsearch/elasticsearch:7.17.18
+
+🧹 5. Clean Up
+Remove the backup or the old image (optional):
+sudo docker image prune
+
+
+
+
