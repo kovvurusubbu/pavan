@@ -1,0 +1,95 @@
+## Step 3: Set Up Kafka
+```bash
+mkdir -p /opt/kafka/data
+chmod 0777 /opt/kafka/data
+docker network create kafka_network
+docker pull bitnami/kafka:3.6
+
+docker run --name kafka \
+  -dit --restart unless-stopped \
+  --net=kafka_network \
+  -v /opt/kafka/data:/bitnami/kafka \
+  -p 9092:9092 \
+  -e KAFKA_CFG_NODE_ID=0 \
+  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
+  -e KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093 \
+  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
+  -e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092 \
+  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+  -e KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT \
+  -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+  bitnami/kafka:3.6
+
+
+
+------------------
+🔄 Zero Downtime Upgrade Steps
+📁 1. Backup your Kafka volume (Optional, but recommended)
+
+sudo docker run --rm \
+  -v /opt/kafka/data:/from \
+  -v $(pwd)/kafka_backup:/to \
+  alpine cp -a /from /to
+
+🚀 2. Run the new Kafka container on a different port
+
+sudo docker run --name kafka-new \
+  -dit --restart unless-stopped \
+  --net=kafka_network \
+  -v /opt/kafka/data:/bitnami/kafka \
+  -p 9094:9092 \  # Note: internal 9092, external 9094
+  -e KAFKA_CFG_NODE_ID=0 \
+  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
+  -e KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka-new:9093 \
+  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
+  -e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9094 \
+  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+  -e KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT \
+  -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+  bitnami/kafka:3.7
+
+✅ Now Kafka 3.7 is running on port 9094.
+
+🧪 3. Test the new container
+Use a Kafka client tool or CLI to:
+
+List topics:
+docker exec -it kafka-new kafka-topics.sh --bootstrap-server localhost:9092 --list
+Produce/consume a test message.
+
+✅ If everything works, it's safe to switch.
+
+🛑 4. Stop the old container
+sudo docker stop kafka
+sudo docker rm kafka
+🚀 5. Run new container on standard port (9092)
+sudo docker stop kafka-new
+sudo docker rm kafka-new
+
+sudo docker run --name kafka \
+  -dit --restart unless-stopped \
+  --net=kafka_network \
+  -v /opt/kafka/data:/bitnami/kafka \
+  -p 9092:9092 \
+  -e KAFKA_CFG_NODE_ID=0 \
+  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
+  -e KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093 \
+  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
+  -e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+  -e KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT \
+  -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+  bitnami/kafka:3.7
+
+🔁 6. Clients automatically reconnect
+If clients use retry/backoff logic, they will reconnect to :9092 once it's available again.
+
+Ensure:
+DNS/IP doesn't change
+You don’t change advertised listener from localhost to IP
+
+🧹 7. Optional Cleanup
+Remove backup:
+rm -rf ./kafka_backup
+Clean unused Docker images:
+sudo docker image prune
