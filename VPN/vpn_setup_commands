@@ -1,0 +1,23 @@
+curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
+chmod +x openvpn-install.sh
+sudo ./openvpn-install.sh
+ls
+sudo ufw allow OpenSSH
+sudo apt install ufw -y
+sudo ufw allow OpenSSH
+sudo ufw allow 1194/udp
+sudo  ufw enable
+sudo nano /etc/sysctl.conf
+sudo apt install nano
+sudo nano /etc/sysctl.conf
+add this inside
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
+
+sudo sysctl -p
+sudo nano /etc/openvpn/server.conf
+sudo systemctl  restart openvpn@server
+
+cat vpn.ovpn   "copy this ovpnfile" save in your local and failename like this --- "vpn-gcp-ovpn"
