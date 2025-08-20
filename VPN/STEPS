@@ -1,0 +1,161 @@
+🚀 Setting up a VPN Server in Google Cloud with OpenVPN
+1. Prerequisites
+
+A Google Cloud Platform (GCP) account
+
+Basic knowledge of Linux commands
+
+2. Create a GCP Project
+
+Go to the GCP Console
+.
+
+Click Create Project, name it (e.g., openvpn-project).
+
+3. Launch a Compute Engine Instance
+
+Navigate to Compute Engine → VM Instances → Create Instance.
+
+Configure:
+
+Name: openvpn-server
+
+Region/Zone: Closest to your users
+
+Machine Type: e2-micro (good for light usage)
+
+Boot Disk: Ubuntu 22.04 LTS
+
+Enable Allow HTTP/HTTPS traffic.
+
+Click Create.
+
+4. Create a Firewall Rule
+
+Go to VPC Network → Firewall → Create Firewall Rule.
+
+Configure:
+
+Name: allow-openvpn
+
+Protocol: UDP
+
+Ports: 1194
+
+5. Reserve a Static External IP
+
+Go to VPC Network → External IP addresses.
+
+Click Reserve Static Address, name it (e.g., openvpn-ip).
+
+Attach it to the openvpn-server instance.
+
+6. Connect to the Instance via SSH
+
+From VM Instances, click SSH next to openvpn-server.
+
+7. Update System Packages
+sudo apt update && sudo apt upgrade -y
+
+8. Install OpenVPN
+
+Run the automated install script:
+
+wget https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
+chmod +x openvpn-install.sh
+sudo ./openvpn-install.sh
+
+9. Configure OpenVPN
+
+Follow the script prompts:
+
+IP Address: Enter your reserved static IP
+
+Protocol: UDP (default) or TCP 443 if UDP is blocked
+
+Port: 1194 (default)
+
+DNS: e.g., 1.1.1.1 (Cloudflare)
+
+Client Name: e.g., user1
+
+The client config file (user1.ovpn) will be created in /root/.
+
+10. Secure the Server
+A. Configure Firewall (UFW)
+sudo ufw allow OpenSSH
+sudo ufw allow 1194/udp
+sudo ufw enable
+
+11. Disable IPv6 on GCP VM
+
+This prevents IPv6 leaks.
+
+Open sysctl config:
+
+sudo nano /etc/sysctl.conf
+
+
+Add at the end:
+
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
+
+Save (Ctrl+O, Enter, Ctrl+X).
+
+Apply changes:
+
+sudo sysctl -p
+
+12. Configure OpenVPN to Block IPv6
+
+Edit OpenVPN server config:
+
+sudo nano /etc/openvpn/server.conf
+
+
+Add at the end:
+
+push "block-ipv6"
+push "dhcp-option DNS 1.1.1.1"
+push "redirect-gateway def1"
+
+
+Restart service:
+
+sudo systemctl restart openvpn@server
+
+13. Download the Client Config
+
+Open SSH to your VM.
+
+Show config file:
+
+sudo cat user1.ovpn
+
+
+Copy everything from client → </tls-crypt>.
+
+Save it locally as user1.ovpn.
+
+14. Test the VPN Connection
+
+Install a VPN client:
+
+OpenVPN Connect
+ (Windows/Mac/Linux/Mobile)
+
+Tunnelblick
+ (macOS)
+
+Import user1.ovpn.
+
+Connect and verify IP change via whatsmyip.com
+.
+
+15. Advanced Security (Optional)
+
+Enable Two-Factor Authentication using Google Authenticator (Guide
+).
