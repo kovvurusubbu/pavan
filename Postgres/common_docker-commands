@@ -1,0 +1,21 @@
+# Create data directory
+sudo mkdir -p /opt/postgres/data
+sudo chown -R 999:999 /opt/postgres/data   # official postgres runs as UID 999
+sudo chmod 700 /opt/postgres/data
+
+# Create a dedicated Docker network (if not already created)
+docker network create postgres_network
+
+# Pull PostgreSQL 16 official image
+docker pull postgres:16
+
+# Run the PostgreSQL 16 container
+docker run --name postgres-db \
+  -d --restart unless-stopped \
+  --net=postgres_network \
+  -v /opt/postgres/data:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  -e POSTGRES_USER=superadmin \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_DB=postgres \
+  postgres:16
