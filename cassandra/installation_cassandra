@@ -1,0 +1,22 @@
+mkdir -p /opt/cassandra/data
+
+
+docker run -dit \
+  --name cassandra \
+  --hostname cassandra \
+  --restart unless-stopped \
+  --network cassandra_network \
+  -v /opt/cassandra/data:/var/lib/cassandra \
+  -e CASSANDRA_CLUSTER_NAME="CassandraCluster" \
+  -e CASSANDRA_AUTHENTICATOR=PasswordAuthenticator \
+  -e CASSANDRA_PASSWORD_SEEDER=true \
+  -e CASSANDRA_SUPERUSER_PASSWORD="cspwwdtm" \
+  -e CASSANDRA_NUM_TOKENS=256 \
+  -e MAX_HEAP_SIZE=2G \
+  -e HEAP_NEWSIZE=200M \
+  -p 7000:7000 \
+  -p 7001:7001 \
+  -p 7199:7199 \
+  -p 9042:9042 \
+  -p 9160:9160 \
+  cassandra:3.11.2
