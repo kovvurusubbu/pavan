@@ -1,0 +1,211 @@
+mkdir sonar
+cd sonar
+
+touch .env
+---------
+# SonarQube Heap Configuration
+# Adjust these values based on your available system memory.
+# Default values are often sufficient for small instances, but larger instances need more.
+
+# Web Server Heap Size (default is usually 512m)
+SONAR_WEB_JAVAOPTS=-Xmx1G -Xms512m
+
+# Compute Engine Heap Size (default is usually 512m)
+SONAR_CE_JAVAOPTS=-Xmx1G -Xms512m
+
+# Elasticsearch Heap Size
+SONAR_SEARCH_JAVAOPTS=-Xmx1G -Xms1G
+
+
+-----
+touch dokcer-compose.yaml
+-------------------------
+version: "3.8"
+
+services:
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://db:5432/sonar
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+      - SONAR_WEB_JAVAOPTS=${SONAR_WEB_JAVAOPTS}
+      - SONAR_CE_JAVAOPTS=${SONAR_CE_JAVAOPTS}
+      - SONAR_SEARCH_JAVAOPTS=${SONAR_SEARCH_JAVAOPTS}
+    volumes:
+      - ./conf:/opt/sonarqube/conf
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    ports:
+      - "9000:9000"
+    networks:
+      - sonarnet
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
+  db:
+    image: postgres:15
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_DB=sonar
+    volumes:
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - sonarnet
+
+networks:
+  sonarnet:
+    driver: bridge
+
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  postgresql:
+  postgresql_data:
+
+
+
+----------------------------------
+
+README.md
+-----------
+# SonarQube Docker Setup
+
+This project provides a production-ready Docker Compose configuration for running SonarQube (Community Edition) with a PostgreSQL database.
+
+## Prerequisites
+
+- Docker
+- Docker Compose
+
+## Critical Configuration: vm.max_map_count
+
+SonarQube uses Elasticsearch, which requires `vm.max_map_count` to be at least 262144. If this is not set, the SonarQube container will fail to start.
+
+**Linux:**
+Run the following command to set it temporarily:
+```bash
+sudo sysctl -w vm.max_map_count=262144
+```
+
+To make it permanent, add the following line to `/etc/sysctl.conf`:
+```
+vm.max_map_count=262144
+```
+Then reload the configuration:
+```bash
+sudo sysctl -p
+```
+
+**Windows (WSL2):**
+Open PowerShell as Administrator and run:
+```powershell
+wsl -d docker-desktop
+sysctl -w vm.max_map_count=262144
+```
+
+## Running SonarQube
+
+1.  Start the services:
+    ```bash
+    docker-compose up -d
+    ```
+
+2.  Check the logs to ensure SonarQube starts successfully (this may take a minute or two):
+    ```bash
+    docker-compose logs -f sonarqube
+    ```
+    Wait until you see a message like `SonarQube is operational`.
+
+3.  Access the SonarQube interface at:
+    [http://localhost:9001](http://localhost:9001)
+
+4.  Login with the default credentials:
+    -   **Username:** `admin`
+    -   **Password:** `admin`
+
+    You will be prompted to change the password upon first login.
+
+## Volumes
+
+The following volumes are created to persist data:
+-   `sonar_data`: SonarQube data files
+-   `sonar_extensions`: Plugins and other extensions
+-   `sonar_logs`: SonarQube logs
+-   `postgresql`: PostgreSQL configuration
+-   `postgresql_data`: PostgreSQL data
+
+## Heap Memory Configuration
+
+You can configure the Java Heap memory for SonarQube in the `.env` file. This is useful if you need to increase performance for larger instances.
+
+Edit the `.env` file:
+
+```bash
+# Web Server Heap Size
+SONAR_WEB_JAVAOPTS=-Xmx1G -Xms512m
+
+# Compute Engine Heap Size
+SONAR_CE_JAVAOPTS=-Xmx1G -Xms512m
+```
+
+After changing the `.env` file, restart the containers:
+
+```bash
+docker-compose down
+docker-compose up -d
+```
+
+### Elasticsearch Heap Configuration
+
+You can also configure the Elasticsearch heap size using `SONAR_SEARCH_JAVAOPTS` in the `.env` file. This is critical for performance as your project grows.
+
+## Best Features & Recommendations
+
+You are running the **latest SonarQube Community Edition**. Here are some best features you can leverage:
+
+1.  **Quality Gates**: Define a set of conditions that your code must meet to be released. Go to **Quality Gates** in the UI to set this up.
+2.  **Plugins**: SonarQube Community Edition supports many plugins.
+    -   To install plugins, go to **Administration > Marketplace**.
+    -   Popular plugins: **SonarJava**, **SonarPython**, **SonarJS**.
+    -   *Note*: Installing plugins requires a restart of the SonarQube container.
+3.  **Branch Analysis**: While full branch analysis is a paid feature, the Community Edition supports scanning the `master` or `main` branch.
+4.  **IDE Integration**: Use **SonarLint** in your IDE (VS Code, IntelliJ, etc.) to catch issues before you commit. Connect it to this SonarQube server to sync rules.
+
+
+---
+To increase the heap space, you simply need to edit the 
+.env
+ file and then recreate the container.
+
+1. Edit the 
+.env
+ file: Change the -Xmx (Maximum Heap) values to a higher number (e.g., 2G or 4G).
+
+For example, to double the memory:
+
+bash
+# Web Server Heap Size
+SONAR_WEB_JAVAOPTS=-Xmx2G -Xms512m
+
+# Compute Engine Heap Size
+SONAR_CE_JAVAOPTS=-Xmx2G -Xms512m
+
+# Elasticsearch Heap Size (Xmx and Xms MUST be the same)
+SONAR_SEARCH_JAVAOPTS=-Xmx2G -Xms2G
+2. Apply the changes: Run this command to recreate the container with the new settings:
+
+bash
+docker-compose up -d
