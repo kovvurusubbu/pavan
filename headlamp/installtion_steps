@@ -1,0 +1,239 @@
+Install Headlamp using official YAML
+-----------------------------------
+kubectl apply -f https://raw.githubusercontent.com/headlamp-k8s/headlamp/main/kubernetes-headlamp.yaml
+
+kubectl get pods -A | grep headlamp
+kubectl get svc -A | grep headlamp
+
+kubectl port-forward -n kube-system svc/headlamp 8080:80
+
+Open:
+👉 http://localhost:8080
+
+Option 1 (Recommended): Kubernetes Token Authentication (ServiceAccount)
+1) Create ServiceAccount + ClusterRoleBinding
+Run below YAML (best practice: create in headlamp namespace)
+=========================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: headlamp
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: headlamp-admin
+  namespace: headlamp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: headlamp-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: headlamp-admin
+    namespace: headlamp
+==============================================
+kubectl apply -f headlamp-auth.yaml
+
+2) Generate token
+kubectl -n headlamp create token headlamp-admin
+
+1) Enable Pod CPU/RAM usage (Must) → Install Metrics Server
+Install Metrics Server
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+kubectl get pods -n kube-system | grep metrics-server
+kubectl top nodes
+kubectl top pods -A
+
+
+--------------------------------------------------------------------------------------------------------------------
+Step 2: Install ONLY Prometheus (No Grafana)
+Add helm repo
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+Install Prometheus (Grafana disabled)
+helm install headlamp-prom prometheus-community/kube-prometheus-stack \
+  -n monitoring --create-namespace \
+  --set grafana.enabled=false \
+  --set alertmanager.enabled=false
+
+
+✅ Step 3: Configure Prometheus URL in Headlamp
+kubectl get svc -n monitoring | grep prometheus
+
+Step 4: Enable Prometheus Plugin in Headlamp
+
+In Headlamp UI:
+➡️ Settings → Plugins → Prometheus
+
+Add endpoint:
+
+
+http://headlamp-prom-kube-prometheus-prometheus.monitoring.svc:9090
+
+✅ Result
+
+Now Headlamp will show:
+✅ pod CPU usage charts
+✅ memory charts
+✅ node charts
+✅ advanced graphs inside Headlamp
+
+
+Step 2: Create Read-Only RBAC + ServiceAccount
+Create file: headlamp-readonly.yaml
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: headlamp-readonly
+  namespace: headlamp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: headlamp-readonly-role
+rules:
+  # Read access to most resources
+  - apiGroups: ["", "apps", "batch", "extensions", "networking.k8s.io", "autoscaling"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+  # Allow reading pod logs
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list", "watch"]
+
+  # Allow reading events
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+
+  # Metrics API (for kubectl top / dashboard metrics)
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: headlamp-readonly-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: headlamp-readonly-role
+subjects:
+  - kind: ServiceAccount
+    name: headlamp-readonly
+    namespace: headlamp
+========================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: headlamp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: headlamp-readonly-role
+rules:
+  - apiGroups: ["", "apps", "batch", "extensions", "networking.k8s.io", "autoscaling"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+  # pod logs
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list", "watch"]
+
+  # events
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+
+  # metrics
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list", "watch"]
+
+
+
+============================================
+✅ Step 3: Generate Token for this User
+kubectl -n headlamp create token headlamp-readonly
+Copy token → give to user → login in Headlamp ✅
+
+
+✅ Step 2: Create 10 ServiceAccounts + Bind Role
+
+NAMESPACE=headlamp
+ROLE=headlamp-readonly-role
+
+users=(
+  sumit
+  ranjith
+  naidu
+  bhanu
+  venkatesh
+  biswaprava
+  satya
+  ramanjeet
+  hemath
+  rohit
+)
+
+kubectl get ns $NAMESPACE >/dev/null 2>&1 || kubectl create ns $NAMESPACE
+
+for u in "${users[@]}"; do
+  echo "Creating user: $u"
+  kubectl -n $NAMESPACE create sa headlamp-ro-$u --dry-run=client -o yaml | kubectl apply -f -
+  kubectl create clusterrolebinding headlamp-ro-$u-binding \
+    --clusterrole=$ROLE \
+    --serviceaccount=$NAMESPACE:headlamp-ro-$u \
+    --dry-run=client -o yaml | kubectl apply -f -
+done
+
+
+
+✅ This will create:
+SA: headlamp-ro-sumit
+SA: headlamp-ro-ranjith
+...
+RoleBinding for each
+
+
+Run this script (it will create folder + save tokens)
+TOKEN_DIR="/home/subbu_devops/Documents/aim/deployments/token"
+NAMESPACE="headlamp"
+
+mkdir -p "$TOKEN_DIR"
+
+for u in sumit ranjith naidu bhanu venkatesh biswaprava satya ramanjeet hemath rohit; do
+  echo "Generating token for: $u"
+
+  kubectl -n "$NAMESPACE" create token "headlamp-ro-$u" > "$TOKEN_DIR/$u.token"
+
+  # optional: show location
+  echo "Saved: $TOKEN_DIR/$u.token"
+done
+
+echo "✅ All tokens saved under: $TOKEN_DIR"
+ls -l "$TOKEN_DIR"
+
+-----
+
+chmod 700 /home/subbu_devops/Documents/aim/deployments/token
+chmod 600 /home/subbu_devops/Documents/aim/deployments/token/*.token
+
+
+
+Done enjoy ---
