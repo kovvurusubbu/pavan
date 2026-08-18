@@ -1,0 +1,32 @@
+The official Linux installation is an AppImage. The developer's instructions are:
+
+chmod +x ./PCBioUnlock-x64.AppImage
+./PCBioUnlock-x64.AppImage
+
+Then open the application and choose Install in the service section, followed by Pair new device.
+
+PC Bio Unlock official installation guide
+
+PC Bio Unlock Android app
+
+Important: this is not a QR-code-based fingerprint system. The phone's actual biometric sensor verifies your fingerprint, while the phone and Ubuntu communicate through the paired connection.
+
+
+url:: https://meis-apps.com/pc-bio-unlock/how-to-install?utm_source=chatgpt.com
+
+chmod +x ./PCBioUnlock-x64.AppImage
+./PCBioUnlock-x64.AppImage
+
+
+
+then follow below steps:
+Then in PC Bio Unlock:
+Open the application.
+Click Install in the service section.
+Click Pair new device.
+Install PC Bio Unlock on your Android phone.
+Pair the phone with your Ubuntu PC.
+Register your phone's fingerprint.
+
+
+Same you can install in the mobile app name : pc Bio Unlock  app in your mobile then scan the qrcode and lock laptop and test and you will get the  notifcation in your mobile you can allow 
